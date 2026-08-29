@@ -1,5 +1,5 @@
-import Dashboard from "./pages/Dashboard";
+import NationalDashboard from "./pages/NationalDashboard";
 
 export default function App() {
-  return <Dashboard />;
+  return <NationalDashboard />;
 }
