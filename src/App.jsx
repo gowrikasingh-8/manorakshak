@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
+import CounsellorDashboard from "./pages/counsellordashboard";
 
 export default function App() {
   return (
@@ -10,11 +11,18 @@ export default function App() {
         <Link to="/" className="text-teal-400 hover:underline">Landing</Link>
         <Link to="/dashboard" className="text-teal-400 hover:underline">Dashboard</Link>
         <Link to="/national" className="text-teal-400 hover:underline">National</Link>
+        <Link to="/counsellor" className="text-teal-400 hover:underline">
+          Counsellor
+        </Link>
       </nav>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/national" element={<NationalDashboard />} />
+        <Route
+          path="/counsellor"
+          element={<CounsellorDashboard />}
+        />
       </Routes>
     </BrowserRouter>
   );
