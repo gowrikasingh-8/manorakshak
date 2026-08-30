@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 
-export default function Landing() {
+export default function Landing({ onContinue }) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [textLarge, setTextLarge] = useState(false);
   const [language, setLanguage] = useState("English");
@@ -75,7 +75,7 @@ export default function Landing() {
           A calm, private space that checks in with you over time and connects
           you with the right support — never a diagnosis, always a next step.
         </p>
-        <Button onClick={() => alert("Continue clicked")}>Login / Continue</Button>
+        <Button onClick={onContinue}>Login / Continue</Button>
       </section>
 
       {/* Problem -> Solution */}
