@@ -5,9 +5,15 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
 import CounsellorDashboard from "./pages/counsellordashboard";
+import Chat from "./pages/Chat";
+import ConsentPage from "./pages/ConsentPage";
+import Support from "./pages/Support";
 
 const victimLinks = [
   { to: "/dashboard", label: "My Dashboard" },
+  { to: "/consent", label: "Consent" },
+  { to: "/chat", label: "Chat Support" },
+  { to: "/support", label: "Support Hub" },
 ];
 
 const staffLinks = [
@@ -69,6 +75,9 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
 
       <Routes>
         <Route path="/dashboard" element={role === "victim" ? <Dashboard /> : <Navigate to="/counsellor" />} />
+        <Route path="/consent" element={role === "victim" ? <ConsentPage /> : <Navigate to="/counsellor" />} />
+        <Route path="/chat" element={role === "victim" ? <Chat /> : <Navigate to="/counsellor" />} />
+        <Route path="/support" element={role === "victim" ? <Support /> : <Navigate to="/counsellor" />} />
         <Route path="/counsellor" element={role === "staff" ? <CounsellorDashboard /> : <Navigate to="/dashboard" />} />
         <Route path="/national" element={role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />

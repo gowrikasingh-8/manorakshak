@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Globe, Trash2, LifeBuoy, X } from 'lucide-react';
-import Button from './components/Button';
-import Card from './components/Card';
+import Button from '../components/Button';
+import Card from '../components/Card';
 const MESSAGES_BY_LANG = {
   en: [
     {
