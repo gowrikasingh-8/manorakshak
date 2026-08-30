@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
-import CounsellorDashboard from "./pages/counsellordashboard";
+import CounsellorDashboard from "./pages/CounsellorDashboard";
+import Alerts from "./pages/Alerts";
 
 export default function App() {
   return (
@@ -14,6 +15,9 @@ export default function App() {
         <Link to="/counsellor" className="text-teal-400 hover:underline">
           Counsellor
         </Link>
+        <Link to="/alerts" className="text-teal-400 hover:underline">
+          Alerts
+        </Link>
       </nav>
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -22,6 +26,10 @@ export default function App() {
         <Route
           path="/counsellor"
           element={<CounsellorDashboard />}
+        />
+        <Route
+          path="/alerts"
+          element={<Alerts />}
         />
       </Routes>
     </BrowserRouter>
