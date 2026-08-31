@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import Button from "../components/button";
+import Card from "../components/card";
 
 function CounsellorDashboard() {
     const [filter, setFilter] = useState("All");
@@ -39,97 +41,110 @@ function CounsellorDashboard() {
         },
     ];
 
-    const filteredCases = cases.filter((item) => {
-        const matchesFilter =
-            filter === "All" || item.trend === filter;
+    const filteredCases = useMemo(() => {
+        return cases.filter((item) => {
+            const matchesFilter =
+                filter === "All" || item.trend === filter;
 
-        const matchesSearch =
-            item.id.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = item.id
+                .toLowerCase()
+                .includes(search.toLowerCase());
 
-        return matchesFilter && matchesSearch;
-    });
+            return matchesFilter && matchesSearch;
+        });
+    }, [filter, search]);
+
+    const followUpsToday = cases.filter(
+        (item) => item.followUp === "Today"
+    ).length;
+
+    const activeAlerts = cases.reduce(
+        (total, item) => total + item.alerts,
+        0
+    );
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-950 text-slate-100">
 
             {/* HEADER */}
-            <header className="border-b bg-white px-6 py-5">
-                <div className="mx-auto max-w-7xl">
-                    <p className="text-sm text-slate-500">
+            <header className="border-b border-slate-800 bg-slate-900">
+                <div className="mx-auto max-w-7xl px-6 py-5">
+
+                    <p className="text-sm text-teal-400">
                         Binary Brains • Counsellor Portal
                     </p>
 
-                    <h1 className="mt-1 text-2xl font-bold">
+                    <h1 className="mt-1 text-2xl font-bold text-white">
                         Counsellor Dashboard
                     </h1>
+
                 </div>
             </header>
 
             {/* MAIN */}
-            <main className="mx-auto max-w-7xl p-6">
+            <main className="mx-auto max-w-7xl px-6 py-8">
 
                 {/* INTRO */}
                 <section className="mb-8">
-                    <p className="text-sm text-slate-500">
+
+                    <p className="text-sm text-slate-400">
                         Counsellor workspace
                     </p>
 
-                    <h2 className="mt-1 text-3xl font-bold">
+                    <h2 className="mt-1 text-3xl font-bold text-white">
                         Cases needing your attention
                     </h2>
 
-                    <p className="mt-2 text-slate-600">
+                    <p className="mt-2 max-w-2xl text-slate-400">
                         Review recent changes, upcoming follow-ups
                         and support alerts from assigned cases.
                     </p>
+
                 </section>
 
                 {/* SUMMARY CARDS */}
                 <section className="grid gap-4 md:grid-cols-3">
 
-                    <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                        <p className="text-sm text-slate-500">
+                    <Card>
+                        <p className="text-sm text-slate-400">
                             Assigned Cases
                         </p>
 
-                        <p className="mt-2 text-3xl font-bold">
+                        <p className="mt-2 text-3xl font-bold text-teal-400">
                             {cases.length}
                         </p>
-                    </div>
+                    </Card>
 
-                    <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                        <p className="text-sm text-slate-500">
+                    <Card>
+                        <p className="text-sm text-slate-400">
                             Follow-ups Today
                         </p>
 
-                        <p className="mt-2 text-3xl font-bold">
-                            {cases.filter((item) => item.followUp === "Today").length}
+                        <p className="mt-2 text-3xl font-bold text-teal-400">
+                            {followUpsToday}
                         </p>
-                    </div>
+                    </Card>
 
-                    <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                        <p className="text-sm text-slate-500">
+                    <Card>
+                        <p className="text-sm text-slate-400">
                             Active Alerts
                         </p>
 
-                        <p className="mt-2 text-3xl font-bold">
-                            {cases.reduce(
-                                (total, item) => total + item.alerts,
-                                0
-                            )}
+                        <p className="mt-2 text-3xl font-bold text-teal-400">
+                            {activeAlerts}
                         </p>
-                    </div>
+                    </Card>
 
                 </section>
 
                 {/* QUEUE */}
                 <section className="mt-10">
 
-                    <h2 className="text-xl font-bold">
+                    <h2 className="text-xl font-bold text-white">
                         Risk-change Queue
                     </h2>
 
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-slate-400">
                         Filter and search your assigned cases.
                     </p>
 
@@ -139,7 +154,7 @@ function CounsellorDashboard() {
                         placeholder="Search case ID..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="mt-5 w-full rounded-xl border bg-white px-4 py-3 outline-none md:w-96"
+                        className="mt-5 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder-slate-500 outline-none focus:border-teal-400 md:w-96"
                     />
 
                     {/* FILTER BUTTONS */}
@@ -147,101 +162,115 @@ function CounsellorDashboard() {
 
                         {["All", "Worsening", "Stable", "Improving"].map(
                             (option) => (
-                                <button
+                                <Button
                                     key={option}
                                     onClick={() => setFilter(option)}
-                                    className={`rounded-xl px-4 py-2 text-sm font-medium ${filter === option
-                                            ? "bg-slate-900 text-white"
-                                            : "bg-white text-slate-600 border"
-                                        }`}
+                                    variant={
+                                        filter === option
+                                            ? "default"
+                                            : "outline"
+                                    }
                                 >
                                     {option}
-                                </button>
+                                </Button>
                             )
                         )}
 
                     </div>
 
-                    {/* CASE CARDS */}
+                    {/* CASES */}
                     <div className="mt-6 space-y-4">
 
-                        {filteredCases.map((item) => (
+                        {filteredCases.length === 0 ? (
 
-                            <div
-                                key={item.id}
-                                className="rounded-2xl border bg-white p-6 shadow-sm"
-                            >
+                            <Card>
+                                <p className="text-center text-slate-400">
+                                    No cases found.
+                                </p>
+                            </Card>
 
-                                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        ) : (
 
-                                    <div>
-                                        <p className="text-sm text-slate-500">
-                                            Case ID
-                                        </p>
+                            filteredCases.map((item) => (
 
-                                        <h3 className="text-xl font-bold">
-                                            {item.id}
-                                        </h3>
+                                <Card key={item.id}>
+
+                                    {/* CASE HEADER */}
+                                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+                                        <div>
+
+                                            <p className="text-sm text-slate-400">
+                                                Case ID
+                                            </p>
+
+                                            <h3 className="text-xl font-bold text-white">
+                                                {item.id}
+                                            </h3>
+
+                                        </div>
+
+                                        <div className="rounded-full border border-teal-500/40 bg-teal-500/10 px-4 py-2 text-sm font-medium text-teal-300">
+
+                                            {item.risk} • {item.trend}
+
+                                        </div>
+
                                     </div>
 
-                                    <div className="rounded-full border px-4 py-2 text-sm font-medium">
-                                        {item.risk} • {item.trend}
+                                    {/* INFORMATION */}
+                                    <div className="mt-6 grid gap-5 md:grid-cols-3">
+
+                                        <div>
+                                            <p className="text-sm text-slate-400">
+                                                Last Interaction
+                                            </p>
+
+                                            <p className="mt-1 font-medium text-slate-200">
+                                                {item.lastInteraction}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-sm text-slate-400">
+                                                Follow-up
+                                            </p>
+
+                                            <p className="mt-1 font-medium text-slate-200">
+                                                {item.followUp}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-sm text-slate-400">
+                                                Alerts
+                                            </p>
+
+                                            <p className="mt-1 font-medium text-slate-200">
+                                                {item.alerts}
+                                            </p>
+                                        </div>
+
                                     </div>
 
-                                </div>
+                                    {/* CONTACT BUTTON */}
+                                    <div className="mt-6 flex justify-end">
 
-                                {/* INFORMATION */}
-                                <div className="mt-6 grid gap-5 md:grid-cols-3">
+                                        <Button
+                                            onClick={() =>
+                                                alert(`Contacting ${item.id}`)
+                                            }
+                                        >
+                                            Quick Contact
+                                        </Button>
 
-                                    <div>
-                                        <p className="text-sm text-slate-500">
-                                            Last Interaction
-                                        </p>
-
-                                        <p className="mt-1 font-medium">
-                                            {item.lastInteraction}
-                                        </p>
                                     </div>
 
-                                    <div>
-                                        <p className="text-sm text-slate-500">
-                                            Follow-up
-                                        </p>
+                                </Card>
 
-                                        <p className="mt-1 font-medium">
-                                            {item.followUp}
-                                        </p>
-                                    </div>
+                            ))
 
-                                    <div>
-                                        <p className="text-sm text-slate-500">
-                                            Alerts
-                                        </p>
-
-                                        <p className="mt-1 font-medium">
-                                            {item.alerts}
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                                {/* BUTTON */}
-                                <div className="mt-6 flex justify-end">
-
-                                    <button
-                                        onClick={() =>
-                                            alert(`Contacting ${item.id}`)
-                                        }
-                                        className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white"
-                                    >
-                                        Quick Contact
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        ))}
+                        )}
 
                     </div>
 
