@@ -12,7 +12,6 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
-import CounsellorDashboard from "./pages/CounsellorDashboard";
 import Alerts from "./pages/Alerts";
 import CounsellorDashboard from "./pages/counsellordashboard";
 import Chat from "./pages/Chat";
