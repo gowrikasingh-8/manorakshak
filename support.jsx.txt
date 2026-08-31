@@ -1,0 +1,729 @@
+import React, { useState, useEffect, useRef } from "react";
+
+/**
+ * Support.jsx
+ * ---------------------------------------------------------------------------
+ * A calm, accessible consent & preferences screen for a support platform.
+ *
+ * Requires Tailwind CSS to be configured in the host project.
+ * No external icon library is used (plain inline SVGs) so this file has
+ * zero extra dependencies beyond React.
+ *
+ * Fonts: loaded dynamically from Google Fonts on mount. If you'd rather
+ * self-host, move the <link> tags into your document <head> and delete
+ * the useEffect below.
+ * ---------------------------------------------------------------------------
+ */
+
+/* ---------------------------- Small inline icons --------------------------- */
+
+const IconShield = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z" />
+    <path d="M9.2 12.2l1.9 1.9 3.7-3.9" />
+  </svg>
+);
+
+const IconChevronDown = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M6 9l6 6 6-6" />
+  </svg>
+);
+
+const IconLock = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="5" y="10.5" width="14" height="9" rx="1.6" />
+    <path d="M8 10.5V8a4 4 0 018 0v2.5" />
+  </svg>
+);
+
+const IconCheck = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M4.5 12.5l5 5 10-11" />
+  </svg>
+);
+
+const IconArrowRight = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M4 12h16M13 5l7 7-7 7" />
+  </svg>
+);
+
+const IconArrowLeft = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M20 12H4M11 5l-7 7 7 7" />
+  </svg>
+);
+
+/* ------------------------------- Static data ------------------------------- */
+
+const LANGUAGES = [
+  { value: "en", label: "English" },
+  { value: "hi", label: "\u0939\u093f\u0928\u094d\u0926\u0940 (Hindi)" },
+  { value: "pa", label: "\u0a2a\u0902\u091c\u093e\u0b2c\u0940 (Punjabi)" },
+  { value: "es", label: "Espa\u00f1ol (Spanish)" },
+  { value: "fr", label: "Fran\u00e7ais (French)" },
+  { value: "other", label: "Other" },
+];
+
+const CONTACT_OPTIONS = [
+  { value: "phone", label: "Phone call", helper: "A counsellor may call the number on file." },
+  { value: "email", label: "Email", helper: "Updates and resources sent to your inbox." },
+  { value: "app", label: "In-app messages only", helper: "Everything stays inside this platform." },
+  { value: "none", label: "Do not contact me directly", helper: "You can still browse resources and check in whenever you choose." },
+];
+
+const SUPPORT_OPTIONS = [
+  { value: "self", label: "Self-guided resources only" },
+  { value: "chat", label: "Chat with a counsellor when I need to" },
+  { value: "calls", label: "Scheduled calls with a counsellor" },
+  { value: "unsure", label: "I'm not sure yet \u2014 decide for me later" },
+];
+
+const DATA_USE_SECTIONS = [
+  {
+    id: "collect",
+    title: "What information we collect",
+    body:
+      "Only what's needed to support you: your preferred language, how you'd like to be contacted, and the check-ins or messages you choose to share. We never ask for more than a step requires.",
+  },
+  {
+    id: "store",
+    title: "How your information is stored and protected",
+    body:
+      "Your information is encrypted and kept on secure servers with restricted access. Only people directly involved in your support \u2014 never the public, never advertisers \u2014 can view it.",
+  },
+  {
+    id: "who",
+    title: "Who can see your information",
+    body:
+      "By default, only you. If you choose to share with a counsellor, they can see the details relevant to supporting you. Administrators can only see de-identified, aggregate information used to keep the service running safely.",
+  },
+  {
+    id: "ai",
+    title: "About AI-assisted insights",
+    body:
+      "If you allow it, we may highlight changes in your check-ins over time so a counsellor can notice patterns sooner. These appear as plain-language observations \u2014 for example, \u2018check-in frequency has dropped this week\u2019 \u2014 not as a diagnosis. A qualified counsellor always reviews and interprets them before anyone acts on them.",
+  },
+  {
+    id: "retain",
+    title: "How long we keep it, and how to delete it",
+    body:
+      "We keep your information only as long as you're using the service or as required by law. You can request deletion at any time from your profile, and we'll confirm once it's done.",
+  },
+];
+
+/* ------------------------------ Small helpers ------------------------------ */
+
+function RequiredBadge() {
+  return (
+    <span className="inline-flex items-center rounded-full border border-[#2F5B54]/25 bg-[#2F5B54]/8 px-2.5 py-0.5 text-xs font-medium text-[#2F5B54] [font-family:var(--font-sans)]">
+      Required
+    </span>
+  );
+}
+
+function OptionalBadge() {
+  return (
+    <span className="inline-flex items-center rounded-full border border-[#B98074]/30 bg-[#B98074]/10 px-2.5 py-0.5 text-xs font-medium text-[#8a5c50] [font-family:var(--font-sans)]">
+      Optional
+    </span>
+  );
+}
+
+function FieldError({ id, message }) {
+  if (!message) return null;
+  return (
+    <p id={id} role="alert" className="mt-2 text-sm text-[#9a3f36] [font-family:var(--font-sans)]">
+      {message}
+    </p>
+  );
+}
+
+/* --------------------------------- Consent card --------------------------------- */
+
+function ConsentCard({ title, description, locked, checked, onChange, inputId }) {
+  return (
+    <div className="rounded-xl border border-[#DCE3DC] bg-white/60 p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold text-[#20302C] [font-family:var(--font-sans)]">
+              {title}
+            </h3>
+            {locked ? <RequiredBadge /> : <OptionalBadge />}
+          </div>
+          <p className="mt-1.5 text-sm leading-relaxed text-[#4B564F] [font-family:var(--font-sans)]">
+            {description}
+          </p>
+        </div>
+
+        <div className="shrink-0 pt-1">
+          {locked ? (
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md bg-[#2F5B54] text-white"
+              aria-hidden="true"
+              title="Required for the service to work"
+            >
+              <IconLock className="h-3.5 w-3.5" />
+            </div>
+          ) : (
+            <>
+              <input
+                type="checkbox"
+                id={inputId}
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked)}
+                className="peer sr-only"
+              />
+              <label
+                htmlFor={inputId}
+                className="flex h-6 w-11 cursor-pointer items-center rounded-full border border-[#DCE3DC] bg-[#E7ECE6] px-0.5 transition-colors peer-checked:bg-[#2F5B54] peer-checked:border-[#2F5B54] peer-focus-visible:ring-2 peer-focus-visible:ring-[#2F5B54] peer-focus-visible:ring-offset-2"
+              >
+                <span className="sr-only">Turn {title} on or off</span>
+                <span
+                  className={`h-4.5 w-4.5 h-[18px] w-[18px] transform rounded-full bg-white shadow transition-transform ${
+                    checked ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </label>
+            </>
+          )}
+        </div>
+      </div>
+      {locked && (
+        <p className="mt-3 text-xs text-[#6b746c] [font-family:var(--font-sans)]">
+          This is the minimum needed to deliver the service, so it can't be turned off here.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* -------------------------------- Accordion item -------------------------------- */
+
+function AccordionItem({ section, isOpen, onToggle }) {
+  const panelId = `panel-${section.id}`;
+  const buttonId = `accordion-${section.id}`;
+
+  return (
+    <div className="border-b border-[#DCE3DC] last:border-b-0">
+      <h3 className="m-0">
+        <button
+          type="button"
+          id={buttonId}
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          onClick={() => onToggle(section.id)}
+          className="flex w-full items-center justify-between gap-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54] focus-visible:ring-offset-2 rounded-md"
+        >
+          <span className="text-sm font-medium text-[#20302C] [font-family:var(--font-sans)]">
+            {section.title}
+          </span>
+          <IconChevronDown
+            className={`h-4.5 w-4.5 h-[18px] w-[18px] shrink-0 text-[#4A7C73] transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+            aria-hidden="true"
+          />
+        </button>
+      </h3>
+      <div
+        id={panelId}
+        role="region"
+        aria-labelledby={buttonId}
+        className={`grid overflow-hidden transition-all duration-200 ease-in-out ${
+          isOpen ? "grid-rows-[1fr] pb-4" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0">
+          <p className="text-sm leading-relaxed text-[#4B564F] [font-family:var(--font-sans)]">
+            {section.body}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------------- Step tracker ----------------------------------- */
+
+function StepTracker({ step }) {
+  const steps = [
+    { key: "form", label: "Preferences" },
+    { key: "review", label: "Review" },
+    { key: "done", label: "Confirmed" },
+  ];
+  const currentIndex = steps.findIndex((s) => s.key === step);
+
+  return (
+    <ol className="flex items-center gap-3 [font-family:var(--font-sans)]" aria-label="Progress">
+      {steps.map((s, i) => {
+        const state = i < currentIndex ? "done" : i === currentIndex ? "current" : "upcoming";
+        return (
+          <li key={s.key} className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span
+                className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
+                  state === "done"
+                    ? "bg-[#2F5B54] text-white"
+                    : state === "current"
+                    ? "border-2 border-[#2F5B54] text-[#2F5B54]"
+                    : "border border-[#DCE3DC] text-[#8a938d]"
+                }`}
+                aria-current={state === "current" ? "step" : undefined}
+              >
+                {state === "done" ? <IconCheck className="h-3 w-3" aria-hidden="true" /> : i + 1}
+              </span>
+              <span
+                className={`text-sm ${
+                  state === "upcoming" ? "text-[#8a938d]" : "text-[#20302C]"
+                }`}
+              >
+                {s.label}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <span className="h-px w-8 bg-[#DCE3DC]" aria-hidden="true" />
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* ------------------------------------ Main component ------------------------------------ */
+
+export default function Support() {
+  // Load calm, legible fonts (Source Serif 4 for headings, Work Sans for body/UI)
+  useEffect(() => {
+    const id = "support-fonts";
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Work+Sans:wght@400;500;600&display=swap";
+    document.head.appendChild(link);
+  }, []);
+
+  const [step, setStep] = useState("form"); // 'form' | 'review' | 'done'
+  const [openAccordion, setOpenAccordion] = useState("collect");
+
+  const [language, setLanguage] = useState("");
+  const [contactPreference, setContactPreference] = useState("");
+  const [supportPreference, setSupportPreference] = useState("unsure");
+  const [shareWithCounsellor, setShareWithCounsellor] = useState(false);
+  const [allowAiInsights, setAllowAiInsights] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+
+  const [errors, setErrors] = useState({});
+  const errorSummaryRef = useRef(null);
+  const languageRef = useRef(null);
+  const contactRef = useRef(null);
+  const agreeRef = useRef(null);
+
+  const toggleAccordion = (id) => setOpenAccordion((cur) => (cur === id ? null : id));
+
+  function validate() {
+    const next = {};
+    if (!language) next.language = "Choose your preferred language.";
+    if (!contactPreference) next.contactPreference = "Choose how you'd like to be contacted.";
+    if (!agreed) next.agreed = "You'll need to confirm this to continue.";
+    setErrors(next);
+    return next;
+  }
+
+  function handleContinue() {
+    const next = validate();
+    if (Object.keys(next).length > 0) {
+      // Move focus to the first invalid field for keyboard & screen-reader users
+      if (next.language) languageRef.current?.focus();
+      else if (next.contactPreference) contactRef.current?.focus();
+      else if (next.agreed) agreeRef.current?.focus();
+      errorSummaryRef.current?.focus();
+      return;
+    }
+    setStep("review");
+  }
+
+  function handleConfirm() {
+    setStep("done");
+  }
+
+  const languageLabel = LANGUAGES.find((l) => l.value === language)?.label ?? "Not set";
+  const contactLabel = CONTACT_OPTIONS.find((c) => c.value === contactPreference)?.label ?? "Not set";
+  const supportLabel = SUPPORT_OPTIONS.find((s) => s.value === supportPreference)?.label ?? "Not set";
+
+  return (
+    <div
+      className="min-h-screen w-full bg-[#F4F6F2] px-4 py-10 sm:px-6"
+      style={{
+        "--font-serif": "'Source Serif 4', Georgia, serif",
+        "--font-sans": "'Work Sans', system-ui, sans-serif",
+      }}
+    >
+      <div className="mx-auto flex max-w-2xl flex-col gap-8">
+        {/* Header */}
+        <header className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 text-[#2F5B54]">
+            <IconShield className="h-5 w-5" aria-hidden="true" />
+            <span className="text-sm font-medium tracking-wide [font-family:var(--font-sans)]">
+              Privacy &amp; consent
+            </span>
+          </div>
+          <StepTracker step={step} />
+        </header>
+
+        {step === "form" && (
+          <>
+            {/* Purpose summary \u2014 the calm, reassuring "hero" moment */}
+            <section
+              aria-label="Why we ask for this information"
+              className="rounded-2xl border border-[#2F5B54]/15 bg-[#2F5B54]/6 p-6 sm:p-7"
+            >
+              <p className="text-xl leading-snug text-[#20302C] [font-family:var(--font-serif)]">
+                We only ask for what helps us support you, and you decide who sees it.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-[#3f4a44] [font-family:var(--font-sans)]">
+                This takes about two minutes. Some choices are required so the service can work
+                safely; everything else is optional and can be changed at any time from your
+                profile.
+              </p>
+            </section>
+
+            {/* Error summary */}
+            {Object.keys(errors).length > 0 && (
+              <div
+                ref={errorSummaryRef}
+                tabIndex={-1}
+                role="alert"
+                aria-live="assertive"
+                className="rounded-xl border border-[#e3a79e] bg-[#fbeeec] p-4 focus:outline-none"
+              >
+                <p className="text-sm font-medium text-[#8a352b] [font-family:var(--font-sans)]">
+                  Please check the following before continuing:
+                </p>
+                <ul className="mt-2 list-inside list-disc text-sm text-[#8a352b] [font-family:var(--font-sans)]">
+                  {Object.values(errors).map((msg, i) => (
+                    <li key={i}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Consent cards */}
+            <section aria-labelledby="consent-heading" className="flex flex-col gap-4">
+              <div>
+                <h2
+                  id="consent-heading"
+                  className="text-lg font-semibold text-[#20302C] [font-family:var(--font-sans)]"
+                >
+                  How your information can be used
+                </h2>
+                <p className="mt-1 text-sm text-[#4B564F] [font-family:var(--font-sans)]">
+                  Turn optional sharing on or off. You can revisit these any time.
+                </p>
+              </div>
+
+              <ConsentCard
+                title="Core support service"
+                description="Lets us deliver check-ins, resources, and respond if you reach out. Needed to use the platform at all."
+                locked
+              />
+              <ConsentCard
+                title="Share with your counsellor"
+                description="A named counsellor can view your check-ins and messages to support you directly."
+                locked={false}
+                checked={shareWithCounsellor}
+                onChange={setShareWithCounsellor}
+                inputId="consent-counsellor"
+              />
+              <ConsentCard
+                title="AI-assisted pattern insights"
+                description="Highlights plain-language changes over time (like a drop in check-ins) for your counsellor to review \u2014 never shown as a diagnosis."
+                locked={false}
+                checked={allowAiInsights}
+                onChange={setAllowAiInsights}
+                inputId="consent-ai"
+              />
+            </section>
+
+            {/* Data-use accordion */}
+            <section aria-labelledby="data-use-heading" className="flex flex-col gap-3">
+              <h2
+                id="data-use-heading"
+                className="text-lg font-semibold text-[#20302C] [font-family:var(--font-sans)]"
+              >
+                The details, in plain language
+              </h2>
+              <div className="rounded-xl border border-[#DCE3DC] bg-white/60 px-5">
+                {DATA_USE_SECTIONS.map((section) => (
+                  <AccordionItem
+                    key={section.id}
+                    section={section}
+                    isOpen={openAccordion === section.id}
+                    onToggle={toggleAccordion}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* Preferences */}
+            <section aria-labelledby="preferences-heading" className="flex flex-col gap-6">
+              <h2
+                id="preferences-heading"
+                className="text-lg font-semibold text-[#20302C] [font-family:var(--font-sans)]"
+              >
+                Your preferences
+              </h2>
+
+              {/* Preferred language */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="language"
+                    className="text-sm font-medium text-[#20302C] [font-family:var(--font-sans)]"
+                  >
+                    Preferred language
+                  </label>
+                  <RequiredBadge />
+                </div>
+                <select
+                  id="language"
+                  ref={languageRef}
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  aria-required="true"
+                  aria-invalid={Boolean(errors.language)}
+                  aria-describedby={errors.language ? "language-error" : undefined}
+                  className="mt-2 w-full rounded-lg border border-[#DCE3DC] bg-white px-3.5 py-2.5 text-sm text-[#20302C] [font-family:var(--font-sans)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54]"
+                >
+                  <option value="" disabled>
+                    Choose a language
+                  </option>
+                  {LANGUAGES.map((l) => (
+                    <option key={l.value} value={l.value}>
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+                <FieldError id="language-error" message={errors.language} />
+              </div>
+
+              {/* Contact preference */}
+              <fieldset>
+                <div className="flex items-center gap-2">
+                  <legend className="text-sm font-medium text-[#20302C] [font-family:var(--font-sans)]">
+                    Contact preference
+                  </legend>
+                  <RequiredBadge />
+                </div>
+                <div
+                  ref={contactRef}
+                  tabIndex={-1}
+                  className="mt-2 flex flex-col gap-2"
+                  aria-describedby={errors.contactPreference ? "contact-error" : undefined}
+                >
+                  {CONTACT_OPTIONS.map((opt) => (
+                    <label
+                      key={opt.value}
+                      htmlFor={`contact-${opt.value}`}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3.5 py-3 [font-family:var(--font-sans)] transition-colors ${
+                        contactPreference === opt.value
+                          ? "border-[#2F5B54] bg-[#2F5B54]/6"
+                          : "border-[#DCE3DC] bg-white"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        id={`contact-${opt.value}`}
+                        name="contactPreference"
+                        value={opt.value}
+                        checked={contactPreference === opt.value}
+                        onChange={(e) => setContactPreference(e.target.value)}
+                        className="mt-1 h-4 w-4 accent-[#2F5B54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54]"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-[#20302C]">
+                          {opt.label}
+                        </span>
+                        <span className="block text-xs text-[#6b746c]">{opt.helper}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <FieldError id="contact-error" message={errors.contactPreference} />
+              </fieldset>
+
+              {/* Support preference */}
+              <fieldset>
+                <div className="flex items-center gap-2">
+                  <legend className="text-sm font-medium text-[#20302C] [font-family:var(--font-sans)]">
+                    Support preference
+                  </legend>
+                  <OptionalBadge />
+                </div>
+                <div className="mt-2 flex flex-col gap-2">
+                  {SUPPORT_OPTIONS.map((opt) => (
+                    <label
+                      key={opt.value}
+                      htmlFor={`support-${opt.value}`}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3.5 py-3 [font-family:var(--font-sans)] transition-colors ${
+                        supportPreference === opt.value
+                          ? "border-[#2F5B54] bg-[#2F5B54]/6"
+                          : "border-[#DCE3DC] bg-white"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        id={`support-${opt.value}`}
+                        name="supportPreference"
+                        value={opt.value}
+                        checked={supportPreference === opt.value}
+                        onChange={(e) => setSupportPreference(e.target.value)}
+                        className="h-4 w-4 accent-[#2F5B54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54]"
+                      />
+                      <span className="text-sm font-medium text-[#20302C]">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </section>
+
+            {/* Consent checkbox */}
+            <section className="rounded-xl border border-[#DCE3DC] bg-white/60 p-5">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="agree"
+                  ref={agreeRef}
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  aria-required="true"
+                  aria-invalid={Boolean(errors.agreed)}
+                  aria-describedby={errors.agreed ? "agree-error" : undefined}
+                  className="mt-1 h-4 w-4 shrink-0 accent-[#2F5B54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54]"
+                />
+                <label
+                  htmlFor="agree"
+                  className="text-sm leading-relaxed text-[#20302C] [font-family:var(--font-sans)]"
+                >
+                  I understand how my information will be used, based on the choices above, and I
+                  agree to continue. <RequiredBadge />
+                </label>
+              </div>
+              <FieldError id="agree-error" message={errors.agreed} />
+            </section>
+
+            {/* Actions */}
+            <div className="flex flex-col-reverse gap-3 pb-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={handleContinue}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2F5B54] px-6 py-3 text-sm font-medium text-white [font-family:var(--font-sans)] transition-colors hover:bg-[#24463F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54] focus-visible:ring-offset-2"
+              >
+                Review your choices
+                <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === "review" && (
+          <>
+            <section
+              aria-labelledby="review-heading"
+              className="rounded-2xl border border-[#DCE3DC] bg-white/70 p-6 sm:p-7"
+            >
+              <h2
+                id="review-heading"
+                className="text-xl text-[#20302C] [font-family:var(--font-serif)]"
+              >
+                Review your choices
+              </h2>
+              <p className="mt-2 text-sm text-[#4B564F] [font-family:var(--font-sans)]">
+                Nothing is final yet. Go back to change anything before confirming.
+              </p>
+
+              <dl className="mt-6 flex flex-col divide-y divide-[#DCE3DC] [font-family:var(--font-sans)]">
+                <ReviewRow label="Preferred language" value={languageLabel} />
+                <ReviewRow label="Contact preference" value={contactLabel} />
+                <ReviewRow label="Support preference" value={supportLabel} />
+                <ReviewRow
+                  label="Share with counsellor"
+                  value={shareWithCounsellor ? "Yes" : "No"}
+                />
+                <ReviewRow
+                  label="AI-assisted insights"
+                  value={allowAiInsights ? "Yes" : "No"}
+                />
+                <ReviewRow label="Core support service" value="Included (required)" />
+              </dl>
+            </section>
+
+            <div className="flex flex-col-reverse gap-3 pb-4 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                onClick={() => setStep("form")}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#DCE3DC] bg-white px-6 py-3 text-sm font-medium text-[#20302C] [font-family:var(--font-sans)] transition-colors hover:bg-[#F4F6F2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54] focus-visible:ring-offset-2"
+              >
+                <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Change something
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2F5B54] px-6 py-3 text-sm font-medium text-white [font-family:var(--font-sans)] transition-colors hover:bg-[#24463F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2F5B54] focus-visible:ring-offset-2"
+              >
+                Confirm my consent
+                <IconCheck className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === "done" && (
+          <section
+            aria-labelledby="done-heading"
+            className="rounded-2xl border border-[#2F5B54]/20 bg-[#2F5B54]/6 p-7 text-center sm:p-9"
+          >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#2F5B54] text-white">
+              <IconCheck className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <h2
+              id="done-heading"
+              className="mt-4 text-xl text-[#20302C] [font-family:var(--font-serif)]"
+            >
+              Your preferences are saved
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#3f4a44] [font-family:var(--font-sans)]">
+              You're set up and ready to continue. You can change any of these choices at any
+              time from{" "}
+              <span className="font-medium text-[#20302C]">
+                Profile &rarr; Privacy &amp; consent
+              </span>
+              .
+            </p>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ReviewRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+      <dt className="text-sm text-[#6b746c]">{label}</dt>
+      <dd className="text-sm font-medium text-[#20302C]">{value}</dd>
+    </div>
+  );
+}
