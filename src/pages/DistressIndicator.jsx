@@ -10,9 +10,9 @@ import {
   X,
   Info,
 } from 'lucide-react';
-import Button from './components/Button';
-import Card from './components/Card';
-import Badge from './components/BadgeDI';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import Badge from '../components/BadgeDI';
 
 const DATA_BY_LANG = {
   en: {

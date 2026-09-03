@@ -9,8 +9,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Globe, TrendingUp, TrendingDown, Minus, AlertTriangle, CalendarX } from 'lucide-react';
-import Card from './components/Card';
-import Badge from './components/BadgeDI';
+import Card from '../components/Card';
+import Badge from '../components/BadgeDI';
 
 // ----- Fake check-in history, per language --------------------------------
 // type: 'checkin' | 'missed' | 'alert'
