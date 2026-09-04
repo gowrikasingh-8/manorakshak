@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
@@ -11,6 +12,7 @@ import {
   PhoneCall,
   Clock,
   AlertCircle,
+  BookOpen,
 } from "lucide-react";
 
 const urgencyStyles = {
@@ -146,19 +148,29 @@ function SupportCard({ option }) {
 }
 
 function support() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6 md:p-10">
-      <header className="max-w-3xl">
-        <h1 className="text-2xl md:text-3xl font-bold text-teal-400">
-          Support &amp; Intervention Hub
-        </h1>
-        <p className="text-slate-400 text-sm mt-2">
-          These are suggested support options, not a diagnosis. Every
-          recommendation includes the reason it was shown, its urgency, and a
-          way to reach a real person.
-        </p>
+      <header className="max-w-3xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-teal-400">
+            Support &amp; Intervention Hub
+          </h1>
+          <p className="text-slate-400 text-sm mt-2">
+            These are suggested support options, not a diagnosis. Every
+            recommendation includes the reason it was shown, its urgency, and a
+            way to reach a real person.
+          </p>
+        </div>
+        <Button
+          onClick={() => navigate("/library")}
+          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white whitespace-nowrap"
+        >
+          <BookOpen className="w-4 h-4" />
+          View Resource Library
+        </Button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">

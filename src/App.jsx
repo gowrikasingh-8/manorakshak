@@ -8,8 +8,13 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { LanguageProvider } from "./LanguageContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import AuditTimelinePage from "./pages/AuditTimelinePage";
+import EscalationWorkflow from "./pages/EscalationWorkflow";
+import Library from "./pages/Library";
+import ReferralTracking from "./pages/ReferralTracking";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
 import CounsellorDashboard from "./pages/counsellordashboard";
@@ -109,6 +114,10 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
         <Route path="/national" element={role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />} />
         <Route path="/alerts" element={role === "staff" ? <Alerts /> : <Navigate to="/dashboard" />} />
         <Route path="/reports" element={role === "staff" ? <ReportsPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/escalate" element={role === "staff" ? <EscalationWorkflow /> : <Navigate to="/dashboard" />} />
+        <Route path="/audit" element={role === "staff" ? <AuditTimelinePage /> : <Navigate to="/dashboard" />} />
+        <Route path="/referrals" element={role === "staff" ? <ReferralTracking /> : <Navigate to="/dashboard" />} />
+        <Route path="/library" element={role === "victim" ? <Library /> : <Navigate to="/counsellor" />} />
         <Route path="/system" element={role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />} />
 
         <Route path="/notifications" element={<NotificationsPage />} />
@@ -136,15 +145,17 @@ export default function App() {
   };
 
   return (
-    <BrowserRouter>
-      <AppRoutes
-        loggedIn={loggedIn}
-        role={role}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-      />
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <AppRoutes
+          loggedIn={loggedIn}
+          role={role}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+        />
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }

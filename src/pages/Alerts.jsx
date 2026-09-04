@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../components/button";
 import Card from "../components/card";
+import { useNavigate } from "react-router-dom";
 
 const initialAlerts = [
     {
@@ -66,6 +67,7 @@ const initialAlerts = [
 ];
 
 function Alerts() {
+    const navigate = useNavigate();
     const [alerts, setAlerts] = useState(initialAlerts);
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
@@ -140,6 +142,11 @@ function Alerts() {
                 return alert;
             })
         );
+    };
+
+    const handleEscalate = (alert) => {
+        updateAlert(alert.id, "escalate");
+        navigate("/escalate", { state: { alertId: alert.id, alertType: alert.type, alertReason: alert.reason } });
     };
 
     const filteredAlerts = alerts.filter((alert) => {
@@ -465,9 +472,7 @@ function Alerts() {
 
                                     <Button
                                         variant="outline"
-                                        onClick={() =>
-                                            updateAlert(alert.id, "escalate")
-                                        }
+                                        onClick={() => handleEscalate(alert)}
                                     >
                                         Escalate
                                     </Button>
