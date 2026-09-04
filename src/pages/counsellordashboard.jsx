@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/button";
 import Card from "../components/card";
 
 function CounsellorDashboard() {
+    const navigate = useNavigate();
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
 
@@ -68,15 +70,32 @@ function CounsellorDashboard() {
 
             {/* HEADER */}
             <header className="border-b border-slate-800 bg-slate-900">
-                <div className="mx-auto max-w-7xl px-6 py-5">
+                <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-                    <p className="text-sm text-teal-400">
-                        Binary Brains • Counsellor Portal
-                    </p>
+                    <div>
+                        <p className="text-sm text-teal-400">
+                            Binary Brains • Counsellor Portal
+                        </p>
 
-                    <h1 className="mt-1 text-2xl font-bold text-white">
-                        Counsellor Dashboard
-                    </h1>
+                        <h1 className="mt-1 text-2xl font-bold text-white">
+                            Counsellor Dashboard
+                        </h1>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate("/referrals")}
+                        >
+                            Track Referrals
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate("/audit")}
+                        >
+                            View Activity Log
+                        </Button>
+                    </div>
 
                 </div>
             </header>
