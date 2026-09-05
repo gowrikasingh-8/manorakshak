@@ -2,6 +2,8 @@ import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import { useLanguage } from "../LanguageContext";
+import ParticleField from "../components/ParticleField";
+import InfoCarousel from "../components/InfoCarousel";
 
 export default function Landing({ onContinue }) {
   const { language, setLanguage, t } = useLanguage();
@@ -9,17 +11,17 @@ export default function Landing({ onContinue }) {
   const [textLarge, setTextLarge] = useState(false);
 
   const steps = [
-    { title: "Check In", desc: "A few quick questions, text or voice, whenever suits you." },
-    { title: "We Listen", desc: "Your responses are reviewed with care and full privacy." },
-    { title: "Get Support", desc: "Receive the right help, from counselling to legal aid." },
-  ];
+  { title: t("step1Title"), desc: t("step1Desc") },
+  { title: t("step2Title"), desc: t("step2Desc") },
+  { title: t("step3Title"), desc: t("step3Desc") },
+];
 
-  const channels = [
-    { name: "Chatbot", desc: "Talk anytime through our support chat." },
-    { name: "SMS", desc: "Prefer texting? Check in over SMS." },
-    { name: "Mobile / Web App", desc: "Full experience on any device." },
-    { name: "Helpline", desc: "Speak to a real person when you need to." },
-  ];
+const channels = [
+  { name: t("channel1Name"), desc: t("channel1Desc") },
+  { name: t("channel2Name"), desc: t("channel2Desc") },
+  { name: t("channel3Name"), desc: t("channel3Desc") },
+  { name: t("channel4Name"), desc: t("channel4Desc") },
+];
 
   const textSizeClass = textLarge ? "text-lg" : "text-base";
 
@@ -32,9 +34,11 @@ export default function Landing({ onContinue }) {
           <div className="absolute w-72 h-72 bg-indigo-500 rounded-full blur-3xl bottom-10 right-10 animate-pulse" />
         </div>
       )}
-      {reducedMotion && (
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-slate-900" />
-      )}
+      {!reducedMotion && (
+  <div className="absolute inset-0 pointer-events-none opacity-40">
+    <ParticleField />
+  </div>
+    )}
 
       {/* Top bar: language + accessibility controls */}
       <div className="relative z-10 flex flex-wrap justify-end items-center gap-3 px-6 pt-6">
@@ -48,6 +52,12 @@ export default function Landing({ onContinue }) {
           <option>हिंदी</option>
           <option>தமிழ்</option>
           <option>বাংলা</option>
+          <option>తెలుగు</option>
+          <option>मराठी</option>
+          <option>ગુજરાતી</option>
+          <option>ಕನ್ನಡ</option>
+          <option>മലയാളം</option>
+          <option>ਪੰਜਾਬੀ</option>
         </select>
 
         <button
@@ -72,6 +82,10 @@ export default function Landing({ onContinue }) {
         <h1 className="text-5xl font-bold text-teal-400 mb-4">{t("heroTitle")}</h1>
         <p className="text-slate-300 mb-8">{t("heroSubtitle")}</p>
         <Button onClick={onContinue}>{t("loginContinue")}</Button>
+      </section>
+      
+      <section className="relative z-10 px-6 pb-16">
+        <InfoCarousel />
       </section>
 
       {/* Problem -> Solution */}

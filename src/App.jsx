@@ -6,7 +6,11 @@ import {
   Link,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "./components/PageTransition";
+import TopProgressBar from "./components/TopProgressBar";
 
 import { LanguageProvider } from "./LanguageContext";
 import Landing from "./pages/Landing";
@@ -49,6 +53,7 @@ const staffLinks = [
 
 function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = (selectedRole) => {
     onLogin(selectedRole);
@@ -57,11 +62,16 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
 
   if (!loggedIn) {
     return (
-      <Routes>
-        <Route path="/" element={<Landing onContinue={() => navigate("/login")} />} />
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      <>
+        <TopProgressBar />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageTransition><Landing onContinue={() => navigate("/login")} /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><Login onLogin={handleLogin} /></PageTransition>} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </AnimatePresence>
+      </>
     );
   }
 
@@ -69,6 +79,8 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
 
   return (
     <div className="min-h-screen bg-slate-900">
+      <TopProgressBar />
+
       {/* TOP BAR */}
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
         <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
@@ -92,7 +104,16 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
               ✕ Close
             </button>
             {links.map((link) => (
-              <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)} className="text-teal-400 hover:underline text-sm">
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={`text-sm px-3 py-2 rounded-lg transition-all duration-200 ${
+                  location.pathname === link.to
+                    ? "bg-teal-500/10 text-teal-300 shadow-[0_0_12px_rgba(45,212,191,0.3)]"
+                    : "text-slate-300 hover:text-teal-400 hover:bg-slate-700/50"
+                }`}
+              >
                 {link.label}
               </Link>
             ))}
@@ -102,28 +123,30 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
       )}
 
       {/* APP ROUTES */}
-      <Routes>
-        <Route path="/dashboard" element={role === "victim" ? <Dashboard /> : <Navigate to="/counsellor" />} />
-        <Route path="/consent" element={role === "victim" ? <ConsentPage /> : <Navigate to="/counsellor" />} />
-        <Route path="/chat" element={role === "victim" ? <Chat /> : <Navigate to="/counsellor" />} />
-        <Route path="/support" element={role === "victim" ? <Support /> : <Navigate to="/counsellor" />} />
-        <Route path="/result" element={role === "victim" ? <DistressIndicator /> : <Navigate to="/counsellor" />} />
-        <Route path="/trends" element={role === "victim" ? <TimelineTrends /> : <Navigate to="/counsellor" />} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/dashboard" element={<PageTransition>{role === "victim" ? <Dashboard /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/consent" element={<PageTransition>{role === "victim" ? <ConsentPage /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/chat" element={<PageTransition>{role === "victim" ? <Chat /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/support" element={<PageTransition>{role === "victim" ? <Support /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/result" element={<PageTransition>{role === "victim" ? <DistressIndicator /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/trends" element={<PageTransition>{role === "victim" ? <TimelineTrends /> : <Navigate to="/counsellor" />}</PageTransition>} />
 
-        <Route path="/counsellor" element={role === "staff" ? <CounsellorDashboard /> : <Navigate to="/dashboard" />} />
-        <Route path="/national" element={role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />} />
-        <Route path="/alerts" element={role === "staff" ? <Alerts /> : <Navigate to="/dashboard" />} />
-        <Route path="/reports" element={role === "staff" ? <ReportsPage /> : <Navigate to="/dashboard" />} />
-        <Route path="/escalate" element={role === "staff" ? <EscalationWorkflow /> : <Navigate to="/dashboard" />} />
-        <Route path="/audit" element={role === "staff" ? <AuditTimelinePage /> : <Navigate to="/dashboard" />} />
-        <Route path="/referrals" element={role === "staff" ? <ReferralTracking /> : <Navigate to="/dashboard" />} />
-        <Route path="/library" element={role === "victim" ? <Library /> : <Navigate to="/counsellor" />} />
-        <Route path="/system" element={role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />} />
+          <Route path="/counsellor" element={<PageTransition>{role === "staff" ? <CounsellorDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/national" element={<PageTransition>{role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/alerts" element={<PageTransition>{role === "staff" ? <Alerts /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/reports" element={<PageTransition>{role === "staff" ? <ReportsPage /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/escalate" element={<PageTransition>{role === "staff" ? <EscalationWorkflow /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/audit" element={<PageTransition>{role === "staff" ? <AuditTimelinePage /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/referrals" element={<PageTransition>{role === "staff" ? <ReferralTracking /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/library" element={<PageTransition>{role === "victim" ? <Library /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/system" element={<PageTransition>{role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />}</PageTransition>} />
 
-        <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/notifications" element={<PageTransition><NotificationsPage /></PageTransition>} />
 
-        <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />
-      </Routes>
+          <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />
+        </Routes>
+      </AnimatePresence>
     </div>
   );
 }
