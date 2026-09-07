@@ -86,7 +86,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
     );
   }
 
-  // Force Consent flow for victims who have not yet consented
+  // Force Consent flow for victims — every login until they agree
   if (role === "victim" && !hasConsented && location.pathname !== "/consent") {
     return <Navigate to="/consent" replace />;
   }
@@ -97,6 +97,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
     <div className="min-h-screen bg-slate-900">
       <TopProgressBar />
 
+<<<<<<< Updated upstream
       {/* TOP BAR */}
       <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between relative">
   {/* Left — hamburger */}
@@ -121,6 +122,40 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
     </button>
   </div>
 </div>
+=======
+            {/* TOP BAR */}
+      <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
+            <span className="w-6 h-0.5 bg-white block"></span>
+            <span className="w-6 h-0.5 bg-white block"></span>
+            <span className="w-6 h-0.5 bg-white block"></span>
+          </button>
+          {role === "victim" && (
+            <button
+              onClick={() => navigate("/profile")}
+              aria-label="Go to profile"
+              className="w-8 h-8 rounded-full bg-teal-800 border-2 border-teal-300 flex items-center justify-center text-white text-xs font-semibold hover:border-white transition-colors"
+            >
+              👤
+            </button>
+          )}
+        </div>
+
+        <span className="text-white font-semibold text-sm">
+          {role === "staff" ? "Staff Portal" : "Support Space"}
+        </span>
+
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white">
+            Logout
+          </button>
+        </div>
+      </div>
+>>>>>>> Stashed changes
 
       {/* SIDE MENU */}
       {menuOpen && (
@@ -183,18 +218,16 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hasConsented, setHasConsented] = useState(() => {
-    return localStorage.getItem("victim_consent") === "true";
-  });
+  const [hasConsented, setHasConsented] = useState(false);
 
   const handleConsent = () => {
-    localStorage.setItem("victim_consent", "true");
     setHasConsented(true);
   };
 
   const handleLogin = (selectedRole) => {
     setRole(selectedRole);
     setLoggedIn(true);
+    setHasConsented(false);
   };
 
   const handleLogout = () => {
