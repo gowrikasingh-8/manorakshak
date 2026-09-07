@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
+import ScheduleModal from "./ScheduleModal";
 import {
   HeartHandshake,
   Stethoscope,
@@ -150,6 +151,7 @@ function SupportCard({ option }) {
 function support() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6 md:p-10">
@@ -191,7 +193,10 @@ function support() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button className="bg-teal-500 hover:bg-teal-400 text-slate-900 font-medium px-5">
+          <Button
+            className="bg-teal-500 hover:bg-teal-400 text-slate-900 font-medium px-5"
+            onClick={() => setScheduleOpen(true)}
+          >
             Book a Session
           </Button>
           <Button className="bg-slate-700 hover:bg-slate-600 text-white px-5">
@@ -199,6 +204,11 @@ function support() {
           </Button>
         </div>
       </Card>
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

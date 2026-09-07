@@ -4,9 +4,11 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "rec
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
+import ScheduleModal from "../components/ScheduleModal";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
 
   const trendData = [
     { day: "Mon", score: 62 },
@@ -70,7 +72,10 @@ export default function Dashboard() {
         <Card>
           <h2 className="text-sm text-slate-400 mb-2">Upcoming Follow-up</h2>
           <p className="text-white font-medium">Counsellor Call</p>
-          <p className="text-slate-400 text-sm">Tomorrow, 4:00 PM</p>
+          <p className="text-slate-400 text-sm mb-3">Tomorrow, 4:00 PM</p>
+          <Button className="w-full text-xs" onClick={() => setScheduleOpen(true)}>
+            Schedule New Follow-up
+          </Button>
         </Card>
 
         <Card>
@@ -81,11 +86,13 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card
-          className="md:col-span-2 cursor-pointer hover:border-teal-500/60"
-          onClick={() => navigate("/notifications")}
-        >
-          <h2 className="text-sm text-slate-400 mb-3">Notifications</h2>
+        <Card className="md:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm text-slate-400">Notifications</h2>
+            <Button onClick={() => navigate("/notifications")} className="text-xs px-3 py-1.5">
+              View All
+            </Button>
+          </div>
           <ul className="space-y-2">
             {notifications.map((n) => (
               <li key={n.id} className="text-sm text-slate-200 border-b border-slate-700 pb-2">
@@ -95,6 +102,11 @@ export default function Dashboard() {
           </ul>
         </Card>
       </div>
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

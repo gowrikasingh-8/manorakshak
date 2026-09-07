@@ -8,10 +8,10 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
+
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/PageTransition";
 import TopProgressBar from "./components/TopProgressBar";
-import { Sun, Moon } from "lucide-react";
 import { LanguageProvider } from "./LanguageContext";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import Landing from "./pages/Landing";
@@ -37,6 +37,7 @@ import CheckIn from "./pages/CheckIn";
 import ProfilePage from "./pages/ProfilePage";
 import CaseDetail from "./pages/CaseDetail";
 import AIInsightCenter from "./pages/AIInsightCenter";
+import { Sun, Moon, Bell } from "lucide-react";
 
 const victimLinks = [
   { to: "/dashboard", label: "My Dashboard" },
@@ -97,34 +98,9 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
     <div className="min-h-screen bg-slate-900">
       <TopProgressBar />
 
-<<<<<<< Updated upstream
       {/* TOP BAR */}
       <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between relative">
-  {/* Left — hamburger */}
-  <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
-    <span className="w-6 h-0.5 bg-white block"></span>
-    <span className="w-6 h-0.5 bg-white block"></span>
-    <span className="w-6 h-0.5 bg-white block"></span>
-  </button>
-
-  {/* Center — title, absolutely positioned so it's always truly centered */}
-  <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
-    {role === "staff" ? "Staff Portal" : "Support Space"}
-  </span>
-
-  {/* Right — theme toggle + logout grouped together */}
-  <div className="flex items-center gap-2">
-    <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
-      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-    </button>
-    <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white px-2 py-1">
-      Logout
-    </button>
-  </div>
-</div>
-=======
-            {/* TOP BAR */}
-      <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between">
+        {/* Left — hamburger + profile circle */}
         <div className="flex items-center gap-2">
           <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
             <span className="w-6 h-0.5 bg-white block"></span>
@@ -142,20 +118,28 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
           )}
         </div>
 
-        <span className="text-white font-semibold text-sm">
+        {/* Center — title, absolutely positioned so it's always truly centered */}
+        <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
           {role === "staff" ? "Staff Portal" : "Support Space"}
         </span>
 
+                {/* Right — notifications + theme toggle + logout grouped together */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/notifications")}
+            className="p-2 rounded-full hover:bg-teal-700 text-white"
+            aria-label="Notifications"
+          >
+            <Bell className="w-4 h-4" />
+          </button>
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white">
+                    <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white px-2 py-1">
             Logout
           </button>
         </div>
       </div>
->>>>>>> Stashed changes
 
       {/* SIDE MENU */}
       {menuOpen && (
@@ -204,7 +188,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
           <Route path="/system" element={<PageTransition>{role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/notifications" element={<PageTransition><NotificationsPage /></PageTransition>} />
           <Route path="/checkin" element={<PageTransition>{role === "victim" ? <CheckIn /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/profile" element={<PageTransition>{role === "victim" ? <ProfilePage /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/profile" element={<PageTransition>{role === "victim" ? <ProfilePage onLogout={onLogout} /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/case-detail" element={<PageTransition>{role === "staff" ? <CaseDetail /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/insights" element={<PageTransition>{role === "staff" ? <AIInsightCenter /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />
