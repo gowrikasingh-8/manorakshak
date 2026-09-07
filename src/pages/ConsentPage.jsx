@@ -1,212 +1,159 @@
 import { useState } from "react";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
-const consentHistory = [
-  { label: "Consented to periodic check-ins", date: "12 Aug 2026" },
-  { label: "Updated data-sharing preference", date: "03 Jul 2026" },
-  { label: "Initial consent given at onboarding", date: "18 Jun 2026" },
+const dataUsePoints = [
+  { title: "What we collect", text: "Your check-in responses, mood/stress indicators, and preferred contact details — nothing beyond what you choose to share." },
+  { title: "Who can see it", text: "Only authorized counsellors and staff directly assigned to your case. Never shared publicly or with unrelated parties." },
+  { title: "How it's used", text: "To understand changes in your well-being over time and connect you with appropriate human support — never to make automated decisions about you." },
+  { title: "Your control", text: "You can change these preferences anytime from your Profile page, and can withdraw consent for future check-ins at any point." },
 ];
 
-function Toggle({ on, onClick, label }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      onClick={onClick}
-      className={`relative w-11 h-6 rounded-full border-0 p-0 cursor-pointer transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 ${
-        on ? "bg-teal-400" : "bg-slate-700"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-150 ${
-          on ? "translate-x-5" : "translate-x-0"
-        }`}
-      />
-    </button>
-  );
-}
-
-function Row({ icon, title, desc, children }) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-4 border-b border-slate-800 last:border-b-0">
-      <div className="flex gap-3">
-        <div className="w-9 h-9 shrink-0 rounded-lg bg-slate-800 text-teal-400 flex items-center justify-center text-lg">
-          {icon}
-        </div>
-        <div>
-          <p className="font-medium m-0">{title}</p>
-          {desc && <p className="text-sm text-slate-400 mt-0.5 mb-0">{desc}</p>}
-        </div>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-// NOTE: this was accidentally renamed to "ConsentPage" in the pasted version,
-// colliding with the default export below. Renamed back to "Section".
-function Section({ title, children }) {
-  return (
-    <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6">
-      <h2 className="text-base font-medium text-slate-200 flex items-center gap-2 mb-2">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-export default function ConsentPage() {
-  const [displayName, setDisplayName] = useState("Anonymous User");
+export default function ConsentPage({ onConsent }) {
+  const [agreed, setAgreed] = useState(false);
   const [language, setLanguage] = useState("English");
-  const [textSize, setTextSize] = useState("md");
-  const [highContrast, setHighContrast] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [checkinReminders, setCheckinReminders] = useState(true);
-  const [followupUpdates, setFollowupUpdates] = useState(true);
-  const [confirmingSignout, setConfirmingSignout] = useState(false);
+  const [contactPref, setContactPref] = useState("app");
+  const [supportPref, setSupportPref] = useState("counselling");
+  const [accordionOpen, setAccordionOpen] = useState(false);
 
-  const textSizeClass =
-    textSize === "sm" ? "text-sm" : textSize === "lg" ? "text-lg" : "text-base";
+  const handleContinue = () => {
+    if (!agreed) return;
+    onConsent?.();
+  };
 
   return (
-    <div
-      className={`min-h-screen bg-slate-950 text-slate-100 font-sans ${textSizeClass} ${
-        highContrast ? "contrast-125" : ""
-      } ${reducedMotion ? "[&_*]:!transition-none [&_*]:!animate-none" : ""}`}
-    >
-      <div className="max-w-xl mx-auto px-4 py-10">
-        <h1 className="text-2xl font-semibold m-0 mb-1">Profile &amp; privacy</h1>
-        <p className="text-slate-400 mb-8">
-          Manage your identity, language, accessibility and privacy settings.
-        </p>
+    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-teal-400 mb-2">Before We Begin</h1>
+          <p className="text-slate-400 text-sm max-w-lg mx-auto">
+            This platform supports you over time through periodic, optional check-ins.
+            Before we continue, please review how your information is handled.
+          </p>
+        </div>
 
-        {/* PROFILE */}
-        <Section title="Profile">
-          <Row icon="👤" title="Display name" desc="Shown to counsellors only">
-            <input
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className="bg-slate-800 text-slate-100 border border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </Row>
-          <Row icon="🌐" title="Preferred language">
+        {/* CONSENT CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <Card>
+            <p className="text-teal-400 text-xs uppercase font-medium mb-1">Purpose</p>
+            <p className="text-slate-300 text-sm">
+              To notice changes in your well-being early and connect you with real human support.
+            </p>
+          </Card>
+          <Card>
+            <p className="text-teal-400 text-xs uppercase font-medium mb-1">Not a Diagnosis</p>
+            <p className="text-slate-300 text-sm">
+              Nothing here is a medical or clinical diagnosis — only a support signal for you and your care team.
+            </p>
+          </Card>
+        </div>
+
+        {/* DATA USE ACCORDION */}
+        <Card className="mb-6">
+          <button
+            onClick={() => setAccordionOpen((v) => !v)}
+            className="w-full flex items-center justify-between text-left"
+          >
+            <span className="font-medium text-white">How your data is used</span>
+            <span className="text-teal-400 text-sm">{accordionOpen ? "Hide" : "Show details"}</span>
+          </button>
+          {accordionOpen && (
+            <div className="mt-4 space-y-4 border-t border-slate-700 pt-4">
+              {dataUsePoints.map((point, i) => (
+                <div key={i}>
+                  <p className="text-white text-sm font-medium mb-1">{point.title}</p>
+                  <p className="text-slate-400 text-sm">{point.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        {/* PREFERENCES */}
+        <Card className="mb-6">
+          <p className="font-medium text-white mb-4">Your preferences</p>
+
+          <div className="mb-4">
+            <label className="text-sm text-slate-400 block mb-1">Preferred language</label>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="bg-slate-800 text-slate-100 border border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-sm"
             >
-              {["English", "Hindi", "Marathi", "Tamil", "Bengali", "Telugu"].map((l) => (
-                <option key={l}>{l}</option>
-              ))}
+              <option>English</option>
+              <option>हिंदी</option>
+              <option>தமிழ்</option>
+              <option>বাংলা</option>
             </select>
-          </Row>
-        </Section>
+            <p className="text-xs text-slate-500 mt-1">Optional — you can change this anytime.</p>
+          </div>
 
-        {/* ACCESSIBILITY */}
-        <Section title="Accessibility">
-          <Row icon="A" title="Text size" desc="Applies across the whole app">
-            <div className="flex gap-1 bg-slate-800 rounded-lg p-1">
-              {["sm", "md", "lg"].map((size) => (
+          <div className="mb-4">
+            <label className="text-sm text-slate-400 block mb-1">Preferred contact method</label>
+            <div className="flex gap-2 flex-wrap">
+              {["app", "sms", "call"].map((opt) => (
                 <button
-                  key={size}
-                  onClick={() => setTextSize(size)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    textSize === size
-                      ? "bg-teal-400 text-slate-950"
-                      : "bg-transparent text-slate-400"
+                  key={opt}
+                  onClick={() => setContactPref(opt)}
+                  className={`px-3 py-1.5 rounded-md text-sm border ${
+                    contactPref === opt
+                      ? "bg-teal-600 border-teal-500 text-white"
+                      : "bg-slate-800 border-slate-700 text-slate-300"
                   }`}
                 >
-                  {size.toUpperCase()}
+                  {opt === "app" ? "In-app" : opt === "sms" ? "SMS" : "Phone call"}
                 </button>
               ))}
             </div>
-          </Row>
-          <Row icon="◐" title="High contrast" desc="Increases contrast for readability">
-            <Toggle
-              on={highContrast}
-              onClick={() => setHighContrast((v) => !v)}
-              label="Toggle high contrast"
-            />
-          </Row>
-          <Row icon="⚡" title="Reduced motion" desc="Turns off animations and transitions">
-            <Toggle
-              on={reducedMotion}
-              onClick={() => setReducedMotion((v) => !v)}
-              label="Toggle reduced motion"
-            />
-          </Row>
-        </Section>
+            <p className="text-xs text-slate-500 mt-1">Optional — you can change this anytime.</p>
+          </div>
 
-        {/* NOTIFICATIONS */}
-        <Section title="Notifications">
-          <Row icon="🔔" title="Check-in reminders" desc="Get reminded when a check-in is due">
-            <Toggle
-              on={checkinReminders}
-              onClick={() => setCheckinReminders((v) => !v)}
-              label="Toggle check-in reminders"
-            />
-          </Row>
-          <Row icon="🔔" title="Follow-up updates" desc="Get notified about support follow-ups">
-            <Toggle
-              on={followupUpdates}
-              onClick={() => setFollowupUpdates((v) => !v)}
-              label="Toggle follow-up updates"
-            />
-          </Row>
-        </Section>
-
-        {/* CONSENT HISTORY */}
-        <Section title={<>🔒 Consent history</>}>
-          <ul className="list-none m-0 p-0">
-            {consentHistory.map((item) => (
-              <li
-                key={item.label}
-                className="flex justify-between text-sm py-2 text-slate-300"
-              >
-                <span>
-                  <span className="text-teal-400 mr-1.5">✓</span>
-                  {item.label}
-                </span>
-                <span className="text-slate-500">{item.date}</span>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        {/* SIGN OUT */}
-        <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6">
-          {!confirmingSignout ? (
-            <button
-              onClick={() => setConfirmingSignout(true)}
-              className="w-full bg-transparent border-0 text-red-400 py-2.5 rounded-lg cursor-pointer text-sm hover:bg-red-900/25"
-            >
-              ← Sign out
-            </button>
-          ) : (
-            <div className="flex justify-between items-center gap-3">
-              <p className="m-0 text-sm text-slate-300">Sign out of this device?</p>
-              <div className="flex gap-2">
+          <div>
+            <label className="text-sm text-slate-400 block mb-1">Support preference</label>
+            <div className="flex gap-2 flex-wrap">
+              {["counselling", "legal", "medical", "unsure"].map((opt) => (
                 <button
-                  onClick={() => setConfirmingSignout(false)}
-                  className="border-0 rounded-lg px-3 py-1.5 text-sm cursor-pointer bg-transparent text-slate-300 hover:bg-slate-800"
+                  key={opt}
+                  onClick={() => setSupportPref(opt)}
+                  className={`px-3 py-1.5 rounded-md text-sm border ${
+                    supportPref === opt
+                      ? "bg-teal-600 border-teal-500 text-white"
+                      : "bg-slate-800 border-slate-700 text-slate-300"
+                  }`}
                 >
-                  Cancel
+                  {opt === "unsure" ? "Not sure yet" : opt.charAt(0).toUpperCase() + opt.slice(1)}
                 </button>
-                <button
-                  onClick={() => {
-                    alert("Signed out (demo only)");
-                    setConfirmingSignout(false);
-                  }}
-                  className="border-0 rounded-lg px-3 py-1.5 text-sm cursor-pointer bg-red-400 text-white hover:bg-red-500"
-                >
-                  Sign out
-                </button>
-              </div>
+              ))}
             </div>
-          )}
-        </section>
+            <p className="text-xs text-slate-500 mt-1">Optional — helps us tailor initial suggestions.</p>
+          </div>
+        </Card>
+
+        {/* CONSENT CHECKBOX */}
+        <Card className="mb-6">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-teal-500"
+            />
+            <span className="text-sm text-slate-300">
+              I understand how my information will be used, and I consent to periodic check-ins
+              as described above. <span className="text-slate-500">(Required to continue)</span>
+            </span>
+          </label>
+        </Card>
+
+        <div className="flex justify-center">
+          <Button onClick={handleContinue} disabled={!agreed}>
+            Continue
+          </Button>
+        </div>
+
+        <p className="text-center text-xs text-slate-500 mt-4">
+          You can review or change your consent anytime from your Profile page.
+        </p>
       </div>
     </div>
   );

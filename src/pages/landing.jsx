@@ -4,11 +4,17 @@ import Card from "../components/Card";
 import { useLanguage } from "../LanguageContext";
 import ParticleField from "../components/ParticleField";
 import InfoCarousel from "../components/InfoCarousel";
+import { useTheme } from "../ThemeContext";
+import { Sun, Moon } from "lucide-react";
 
 export default function Landing({ onContinue }) {
   const { language, setLanguage, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [textLarge, setTextLarge] = useState(false);
+  const [textSize, setTextSize] = useState("normal"); // "small" | "normal" | "large"
+  const cycleTextSize = () => {
+  setTextSize((s) => (s === "small" ? "normal" : s === "normal" ? "large" : "small"));
+};
 
   const steps = [
   { title: t("step1Title"), desc: t("step1Desc") },
@@ -23,7 +29,7 @@ const channels = [
   { name: t("channel4Name"), desc: t("channel4Desc") },
 ];
 
-  const textSizeClass = textLarge ? "text-lg" : "text-base";
+ const textSizeClass = textSize === "large" ? "text-lg" : textSize === "small" ? "text-sm" : "text-base";
 
   return (
     <div className={`min-h-screen bg-slate-900 text-white relative overflow-hidden ${textSizeClass}`}>
@@ -60,12 +66,8 @@ const channels = [
           <option>ਪੰਜਾਬੀ</option>
         </select>
 
-        <button
-          onClick={() => setTextLarge((v) => !v)}
-          className="bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm hover:bg-slate-700"
-          aria-pressed={textLarge}
-        >
-          {textLarge ? "A- Normal Text" : "A+ Larger Text"}
+        <button onClick={cycleTextSize} className="bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm hover:bg-slate-700">
+          {textSize === "small" ? "A Normal" : textSize === "normal" ? "A+ Larger" : "A- Smaller"}
         </button>
 
         <button
@@ -75,8 +77,11 @@ const channels = [
         >
           {reducedMotion ? "Motion: Off" : "Reduce Motion"}
         </button>
+        <button onClick={toggleTheme} className="bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm hover:bg-slate-700 flex items-center gap-1">
+        {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
       </div>
-
+      
       {/* Hero */}
       <section className="relative z-10 max-w-4xl mx-auto text-center px-6 pt-16 pb-16">
         <h1 className="text-5xl font-bold text-teal-400 mb-4">{t("heroTitle")}</h1>

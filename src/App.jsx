@@ -11,8 +11,9 @@ import {
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/PageTransition";
 import TopProgressBar from "./components/TopProgressBar";
-
+import { Sun, Moon } from "lucide-react";
 import { LanguageProvider } from "./LanguageContext";
+import { ThemeProvider, useTheme } from "./ThemeContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import AuditTimelinePage from "./pages/AuditTimelinePage";
@@ -22,6 +23,7 @@ import ReferralTracking from "./pages/ReferralTracking";
 import Dashboard from "./pages/Dashboard";
 import NationalDashboard from "./pages/NationalDashboard";
 import CounsellorDashboard from "./pages/counsellordashboard";
+import CaseAssignment from "./pages/CaseAssignment";
 import Chat from "./pages/Chat";
 import ConsentPage from "./pages/ConsentPage";
 import Support from "./pages/Support";
@@ -31,10 +33,16 @@ import NotificationsPage from "./pages/NotificationsPage";
 import ReportsPage from "./pages/ReportsPage";
 import SystemStatus from "./pages/SystemStatus";
 import TimelineTrends from "./pages/TimelineTrends";
+import CheckIn from "./pages/CheckIn";
+import ProfilePage from "./pages/ProfilePage";
+import CaseDetail from "./pages/CaseDetail";
+import AIInsightCenter from "./pages/AIInsightCenter";
 
 const victimLinks = [
   { to: "/dashboard", label: "My Dashboard" },
   { to: "/consent", label: "Consent" },
+  { to: "/checkin", label: "Check-in" },
+  { to: "/profile", label: "Profile & Privacy" },
   { to: "/chat", label: "Chat Support" },
   { to: "/support", label: "Support Hub" },
   { to: "/result", label: "My Result" },
@@ -44,6 +52,8 @@ const victimLinks = [
 
 const staffLinks = [
   { to: "/counsellor", label: "Counsellor Dashboard" },
+  { to: "/case-detail", label: "Case Detail" },
+  { to: "/insights", label: "AI Insight Center" },
   { to: "/national", label: "National Dashboard" },
   { to: "/alerts", label: "Alerts" },
   { to: "/reports", label: "Reports" },
@@ -51,9 +61,10 @@ const staffLinks = [
   { to: "/notifications", label: "Notifications" },
 ];
 
-function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen }) {
+function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout, menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogin = (selectedRole) => {
     onLogin(selectedRole);
@@ -75,6 +86,11 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
     );
   }
 
+  // Force Consent flow for victims who have not yet consented
+  if (role === "victim" && !hasConsented && location.pathname !== "/consent") {
+    return <Navigate to="/consent" replace />;
+  }
+
   const links = role === "staff" ? staffLinks : victimLinks;
 
   return (
@@ -82,16 +98,19 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
       <TopProgressBar />
 
       {/* TOP BAR */}
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+      <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between">
         <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
           <span className="w-6 h-0.5 bg-white block"></span>
           <span className="w-6 h-0.5 bg-white block"></span>
           <span className="w-6 h-0.5 bg-white block"></span>
         </button>
-        <span className="text-teal-400 font-semibold text-sm">
+        <span className="text-white font-semibold text-sm">
           {role === "staff" ? "Staff Portal" : "Support Space"}
         </span>
-        <button onClick={onLogout} className="text-slate-400 text-xs hover:text-white">
+        <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
+          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+        <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white">
           Logout
         </button>
       </div>
@@ -126,24 +145,26 @@ function AppRoutes({ loggedIn, role, onLogin, onLogout, menuOpen, setMenuOpen })
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/dashboard" element={<PageTransition>{role === "victim" ? <Dashboard /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/consent" element={<PageTransition>{role === "victim" ? <ConsentPage /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/consent" element={<PageTransition>{role === "victim" ? <ConsentPage onConsent={onConsent} /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/chat" element={<PageTransition>{role === "victim" ? <Chat /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/support" element={<PageTransition>{role === "victim" ? <Support /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/result" element={<PageTransition>{role === "victim" ? <DistressIndicator /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/trends" element={<PageTransition>{role === "victim" ? <TimelineTrends /> : <Navigate to="/counsellor" />}</PageTransition>} />
-
           <Route path="/counsellor" element={<PageTransition>{role === "staff" ? <CounsellorDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/national" element={<PageTransition>{role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/alerts" element={<PageTransition>{role === "staff" ? <Alerts /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/reports" element={<PageTransition>{role === "staff" ? <ReportsPage /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/assign" element={<PageTransition>{role === "staff" ? <CaseAssignment /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/escalate" element={<PageTransition>{role === "staff" ? <EscalationWorkflow /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/audit" element={<PageTransition>{role === "staff" ? <AuditTimelinePage /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/referrals" element={<PageTransition>{role === "staff" ? <ReferralTracking /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="/library" element={<PageTransition>{role === "victim" ? <Library /> : <Navigate to="/counsellor" />}</PageTransition>} />
           <Route path="/system" element={<PageTransition>{role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />}</PageTransition>} />
-
           <Route path="/notifications" element={<PageTransition><NotificationsPage /></PageTransition>} />
-
+          <Route path="/checkin" element={<PageTransition>{role === "victim" ? <CheckIn /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/profile" element={<PageTransition>{role === "victim" ? <ProfilePage /> : <Navigate to="/counsellor" />}</PageTransition>} />
+          <Route path="/case-detail" element={<PageTransition>{role === "staff" ? <CaseDetail /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          <Route path="/insights" element={<PageTransition>{role === "staff" ? <AIInsightCenter /> : <Navigate to="/dashboard" />}</PageTransition>} />
           <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />
         </Routes>
       </AnimatePresence>
@@ -155,6 +176,14 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hasConsented, setHasConsented] = useState(() => {
+    return localStorage.getItem("victim_consent") === "true";
+  });
+
+  const handleConsent = () => {
+    localStorage.setItem("victim_consent", "true");
+    setHasConsented(true);
+  };
 
   const handleLogin = (selectedRole) => {
     setRole(selectedRole);
@@ -168,17 +197,21 @@ export default function App() {
   };
 
   return (
-    <LanguageProvider>
-      <BrowserRouter>
-        <AppRoutes
-          loggedIn={loggedIn}
-          role={role}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-        />
-      </BrowserRouter>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <BrowserRouter>
+          <AppRoutes
+            loggedIn={loggedIn}
+            role={role}
+            hasConsented={hasConsented}
+            onConsent={handleConsent}
+            onLogin={handleLogin}
+            onLogout={handleLogout}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+          />
+        </BrowserRouter>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

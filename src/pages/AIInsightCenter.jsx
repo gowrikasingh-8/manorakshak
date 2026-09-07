@@ -12,9 +12,9 @@ import {
   CheckCircle2,
   Brain,
 } from 'lucide-react';
-import Card from './components/Card';
-import Button from './components/Button';
-import Badge from './components/BadgeDI';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Badge from '../components/BadgeDI';
 
 // ----- Mock AI insight data, per language ---------------------------------
 // Shape follows the team's AI-response contract. Replace with real API later.

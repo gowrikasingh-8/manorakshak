@@ -85,6 +85,12 @@ function CounsellorDashboard() {
                     <div className="flex flex-wrap gap-2">
                         <Button
                             variant="outline"
+                            onClick={() => navigate("/assign")}
+                        >
+                            Assign Cases
+                        </Button>
+                        <Button
+                            variant="outline"
                             onClick={() => navigate("/referrals")}
                         >
                             Track Referrals

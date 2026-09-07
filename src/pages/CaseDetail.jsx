@@ -15,9 +15,9 @@ import {
   Loader2,
   SearchX,
 } from 'lucide-react';
-import Card from './components/Card';
-import Button from './components/Button';
-import Badge from './components/BadgeDI';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Badge from '../components/BadgeDI';
 
 // ----- Fake case record store, per language --------------------------------
 // Keyed by caseId. Swap getCaseById() for a real API call later — the UI
