@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import { useNavigate } from "react-router-dom";
 
 const dataUsePoints = [
   { title: "What we collect", text: "Your check-in responses, mood/stress indicators, and preferred contact details — nothing beyond what you choose to share." },
@@ -15,10 +16,11 @@ export default function ConsentPage({ onConsent }) {
   const [contactPref, setContactPref] = useState("app");
   const [supportPref, setSupportPref] = useState("counselling");
   const [accordionOpen, setAccordionOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleContinue = () => {
     if (!agreed) return;
     onConsent?.();
+    navigate("/dashboard");
   };
 
   return (
