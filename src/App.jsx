@@ -98,22 +98,29 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
       <TopProgressBar />
 
       {/* TOP BAR */}
-      <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between">
-        <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
-          <span className="w-6 h-0.5 bg-white block"></span>
-          <span className="w-6 h-0.5 bg-white block"></span>
-          <span className="w-6 h-0.5 bg-white block"></span>
-        </button>
-        <span className="text-white font-semibold text-sm">
-          {role === "staff" ? "Staff Portal" : "Support Space"}
-        </span>
-        <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
-          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
-        <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white">
-          Logout
-        </button>
-      </div>
+      <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between relative">
+  {/* Left — hamburger */}
+  <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
+    <span className="w-6 h-0.5 bg-white block"></span>
+    <span className="w-6 h-0.5 bg-white block"></span>
+    <span className="w-6 h-0.5 bg-white block"></span>
+  </button>
+
+  {/* Center — title, absolutely positioned so it's always truly centered */}
+  <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
+    {role === "staff" ? "Staff Portal" : "Support Space"}
+  </span>
+
+  {/* Right — theme toggle + logout grouped together */}
+  <div className="flex items-center gap-2">
+    <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
+      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+    </button>
+    <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white px-2 py-1">
+      Logout
+    </button>
+  </div>
+</div>
 
       {/* SIDE MENU */}
       {menuOpen && (
