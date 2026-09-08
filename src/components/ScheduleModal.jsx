@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./Button";
 
-export default function ScheduleModal({ open, onClose, onConfirm }) {
-  const [service, setService] = useState("counselling");
+export default function ScheduleModal({ open, onClose, onConfirm, initialService = "counselling" }) {
+  const [service, setService] = useState(initialService);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (open) setService(initialService);
+  }, [open, initialService]);
 
   if (!open) return null;
 
@@ -46,6 +50,8 @@ export default function ScheduleModal({ open, onClose, onConfirm }) {
                 <option value="counselling">Counselling</option>
                 <option value="medical">Medical Support</option>
                 <option value="legal">Legal Aid</option>
+                <option value="protection">Protection & Relocation</option>
+                <option value="financial">Financial & Rehabilitation</option>
                 <option value="general">General Check-in Call</option>
               </select>
             </div>
@@ -67,7 +73,7 @@ export default function ScheduleModal({ open, onClose, onConfirm }) {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                style={{ colorScheme: "dark" , color: "#ffffff" }}
+                style={{ colorScheme: "dark", color: "#ffffff" }}
                 className="w-full bg-slate-900 border border-slate-700 rounded-md px-3 py-2 text-sm"
               />
             </div>

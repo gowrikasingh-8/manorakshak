@@ -13,6 +13,7 @@ import {
 import Button from '../components/Button';
 import Card from '../components/Card';
 import Badge from '../components/BadgeDI';
+import ScheduleModal from '../components/ScheduleModal';
 
 const DATA_BY_LANG = {
   en: {
@@ -115,6 +116,7 @@ export default function DistressIndicator() {
   const [language, setLanguage] = useState('en');
   const [showExplanation, setShowExplanation] = useState(false);
   const [showEscalationModal, setShowEscalationModal] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const t = COPY[language];
   const data = DATA_BY_LANG[language];
@@ -242,16 +244,24 @@ export default function DistressIndicator() {
           ))}
         </ul>
       </Card>
-
-      {/* Human-support CTA */}
-      <Button
-        type="button"
-        onClick={() => setShowEscalationModal(true)}
-        className="flex items-center justify-center gap-2 rounded-full bg-teal-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm shadow-teal-900/40 hover:bg-teal-400"
-      >
-        <LifeBuoy className="h-4 w-4" aria-hidden="true" />
-        {t.escalate}
-      </Button>
+            {/* Human-support CTA */}
+      <div className="flex flex-col gap-2">
+        <Button
+          type="button"
+          onClick={() => setShowEscalationModal(true)}
+          className="flex items-center justify-center gap-2 rounded-full bg-teal-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm shadow-teal-900/40 hover:bg-teal-400"
+        >
+          <LifeBuoy className="h-4 w-4" aria-hidden="true" />
+          {t.escalate}
+        </Button>
+        <Button
+          type="button"
+          onClick={() => setScheduleOpen(true)}
+          className="flex items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-200 hover:border-teal-500 hover:text-teal-300"
+        >
+          Book a Session
+        </Button>
+      </div>
 
       {/* Escalation modal */}
       {showEscalationModal && (
@@ -291,6 +301,11 @@ export default function DistressIndicator() {
           </Card>
         </div>
       )}
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import ScheduleModal from "../components/ScheduleModal";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const trendData = [
     { day: "Mon", score: 62 },

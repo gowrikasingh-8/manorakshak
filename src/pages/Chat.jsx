@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Globe, Trash2, LifeBuoy, X } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import ScheduleModal from '../components/ScheduleModal';
+import { CalendarPlus } from 'lucide-react';
+
 const MESSAGES_BY_LANG = {
   en: [
     {
@@ -132,6 +135,7 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [showEscalationModal, setShowEscalationModal] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
   const scrollRef = useRef(null);
 
   const t = COPY[language];
@@ -233,6 +237,16 @@ export default function Chat() {
           >
             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">{t.clear}</span>
+          </Button>
+
+                    {/* Schedule follow-up button */}
+          <Button
+            type="button"
+            onClick={() => setScheduleOpen(true)}
+            className="flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/70 px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-teal-500 hover:text-teal-300"
+          >
+            <CalendarPlus className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Schedule follow-up</span>
           </Button>
 
           {/* Escalation button */}
@@ -379,6 +393,11 @@ export default function Chat() {
           </Card>
         </div>
       )}
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

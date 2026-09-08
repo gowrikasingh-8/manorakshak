@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
-import ScheduleModal from "./ScheduleModal";
+import ScheduleModal from "../components/ScheduleModal";
 import {
   HeartHandshake,
   Stethoscope,
@@ -27,10 +27,8 @@ const supportOptions = [
     id: "counselling",
     icon: HeartHandshake,
     title: "Counselling Support",
-    description:
-      "Connect with a licensed counsellor for one-on-one emotional guidance and coping strategies.",
-    reason:
-      "Recommended based on recent patterns suggesting ongoing emotional strain.",
+    description: "Connect with a licensed counsellor for one-on-one emotional guidance and coping strategies.",
+    reason: "Recommended based on recent patterns suggesting ongoing emotional strain.",
     urgency: "Medium",
     availability: "Mon–Fri, 9 AM – 6 PM",
     responseTime: "Within 24 hours",
@@ -40,10 +38,8 @@ const supportOptions = [
     id: "medical",
     icon: Stethoscope,
     title: "Medical Support",
-    description:
-      "Access confidential medical consultation, examinations, or referrals to trusted healthcare providers.",
-    reason:
-      "Flagged when indicators suggest a possible physical health concern requiring attention.",
+    description: "Access confidential medical consultation, examinations, or referrals to trusted healthcare providers.",
+    reason: "Flagged when indicators suggest a possible physical health concern requiring attention.",
     urgency: "High",
     availability: "24/7 Helpline",
     responseTime: "Immediate",
@@ -53,10 +49,8 @@ const supportOptions = [
     id: "legal",
     icon: Scale,
     title: "Legal Aid",
-    description:
-      "Get guidance from legal advisors on rights, protective orders, and formal reporting processes.",
-    reason:
-      "Suggested when a situation may involve rights violations or require formal documentation.",
+    description: "Get guidance from legal advisors on rights, protective orders, and formal reporting processes.",
+    reason: "Suggested when a situation may involve rights violations or require formal documentation.",
     urgency: "Medium",
     availability: "Mon–Sat, 10 AM – 5 PM",
     responseTime: "Within 48 hours",
@@ -66,10 +60,8 @@ const supportOptions = [
     id: "protection",
     icon: ShieldCheck,
     title: "Protection & Relocation",
-    description:
-      "Confidential support for safety planning, emergency shelter, and relocation assistance.",
-    reason:
-      "Escalated when indicators point to an immediate safety risk.",
+    description: "Confidential support for safety planning, emergency shelter, and relocation assistance.",
+    reason: "Escalated when indicators point to an immediate safety risk.",
     urgency: "High",
     availability: "24/7 Emergency Line",
     responseTime: "Immediate",
@@ -79,10 +71,8 @@ const supportOptions = [
     id: "financial",
     icon: HandCoins,
     title: "Financial & Rehabilitation",
-    description:
-      "Access financial assistance programs, skill rehabilitation, and long-term reintegration support.",
-    reason:
-      "Offered when recovery may be supported by financial stability or skill-building resources.",
+    description: "Access financial assistance programs, skill rehabilitation, and long-term reintegration support.",
+    reason: "Offered when recovery may be supported by financial stability or skill-building resources.",
     urgency: "Low",
     availability: "Mon–Fri, 9 AM – 5 PM",
     responseTime: "Within 3–5 days",
@@ -99,7 +89,7 @@ function UrgencyBadge({ level }) {
   );
 }
 
-function SupportCard({ option }) {
+function SupportCard({ option, onBook }) {
   const Icon = option.icon;
 
   return (
@@ -114,9 +104,7 @@ function SupportCard({ option }) {
         <UrgencyBadge level={option.urgency} />
       </div>
 
-      <p className="text-slate-300 text-sm leading-relaxed">
-        {option.description}
-      </p>
+      <p className="text-slate-300 text-sm leading-relaxed">{option.description}</p>
 
       <div className="mt-4 p-3 rounded-lg bg-slate-900/60 border border-slate-700/60">
         <p className="text-xs text-slate-400">
@@ -137,7 +125,10 @@ function SupportCard({ option }) {
       </div>
 
       <div className="mt-6 flex gap-3">
-        <Button className="flex-1 bg-teal-500 hover:bg-teal-400 text-slate-900 font-medium">
+        <Button
+          className="flex-1 bg-teal-500 hover:bg-teal-400 text-slate-900 font-medium"
+          onClick={() => onBook(option.id)}
+        >
           {option.contactLabel}
         </Button>
         <Button className="px-3 bg-slate-700 hover:bg-slate-600 text-white">
@@ -150,8 +141,13 @@ function SupportCard({ option }) {
 
 function support() {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleService, setScheduleService] = useState("counselling");
+
+  const handleBook = (serviceId) => {
+    setScheduleService(serviceId);
+    setScheduleOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6 md:p-10">
@@ -177,7 +173,7 @@ function support() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
         {supportOptions.map((option) => (
-          <SupportCard key={option.id} option={option} />
+          <SupportCard key={option.id} option={option} onBook={handleBook} />
         ))}
       </div>
 
@@ -195,7 +191,7 @@ function support() {
         <div className="flex gap-3">
           <Button
             className="bg-teal-500 hover:bg-teal-400 text-slate-900 font-medium px-5"
-            onClick={() => setScheduleOpen(true)}
+            onClick={() => handleBook("general")}
           >
             Book a Session
           </Button>
@@ -204,9 +200,11 @@ function support() {
           </Button>
         </div>
       </Card>
+
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
+        initialService={scheduleService}
         onConfirm={(data) => console.log("Scheduled:", data)}
       />
     </div>
