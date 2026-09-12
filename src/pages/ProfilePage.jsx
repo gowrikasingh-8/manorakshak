@@ -54,7 +54,7 @@ function Section({ title, children }) {
   );
 }
 
-export default function ProfilePage() {
+export default function ProfilePage({ onLogout }) {
   const [displayName, setDisplayName] = useState("Anonymous User");
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("md");
@@ -192,10 +192,10 @@ export default function ProfilePage() {
                 >
                   Cancel
                 </button>
-                <button
+                                <button
                   onClick={() => {
-                    alert("Signed out (demo only)");
                     setConfirmingSignout(false);
+                    onLogout?.();
                   }}
                   className="border-0 rounded-lg px-3 py-1.5 text-sm cursor-pointer bg-red-400 text-white hover:bg-red-500"
                 >

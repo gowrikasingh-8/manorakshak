@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
+import ScheduleModal from "../components/ScheduleModal";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+
   const trendData = [
     { day: "Mon", score: 62 },
     { day: "Tue", score: 58 },
@@ -36,7 +41,7 @@ export default function Dashboard() {
           <p className="text-slate-300 text-sm mb-4">
             A quick 2-minute check-in helps us understand how you're doing.
           </p>
-          <Button onClick={() => alert("Starting check-in...")}>Start Check-in</Button>
+          <Button onClick={() => navigate("/checkin")}>Start Check-in</Button>
         </Card>
 
         <Card>
@@ -59,24 +64,35 @@ export default function Dashboard() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+          <Button className="w-full mt-4" onClick={() => navigate("/trends")}>
+            View Full Trends
+          </Button>
         </Card>
 
         <Card>
           <h2 className="text-sm text-slate-400 mb-2">Upcoming Follow-up</h2>
           <p className="text-white font-medium">Counsellor Call</p>
-          <p className="text-slate-400 text-sm">Tomorrow, 4:00 PM</p>
+          <p className="text-slate-400 text-sm mb-3">Tomorrow, 4:00 PM</p>
+          <Button className="w-full text-xs" onClick={() => setScheduleOpen(true)}>
+            Schedule New Follow-up
+          </Button>
         </Card>
 
         <Card>
           <h2 className="text-sm text-slate-400 mb-3">Support Shortcuts</h2>
           <div className="flex flex-col gap-2">
-            <Button className="w-full">Talk to Chatbot</Button>
-            <Button className="w-full">View Support Options</Button>
+            <Button className="w-full" onClick={() => navigate("/chat")}>Talk to Chatbot</Button>
+            <Button className="w-full" onClick={() => navigate("/support")}>View Support Options</Button>
           </div>
         </Card>
 
         <Card className="md:col-span-2">
-          <h2 className="text-sm text-slate-400 mb-3">Notifications</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm text-slate-400">Notifications</h2>
+            <Button onClick={() => navigate("/notifications")} className="text-xs px-3 py-1.5">
+              View All
+            </Button>
+          </div>
           <ul className="space-y-2">
             {notifications.map((n) => (
               <li key={n.id} className="text-sm text-slate-200 border-b border-slate-700 pb-2">
@@ -86,6 +102,11 @@ export default function Dashboard() {
           </ul>
         </Card>
       </div>
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

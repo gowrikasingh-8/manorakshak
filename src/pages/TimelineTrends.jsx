@@ -11,6 +11,8 @@ import {
 import { Globe, TrendingUp, TrendingDown, Minus, AlertTriangle, CalendarX } from 'lucide-react';
 import Card from '../components/Card';
 import Badge from '../components/BadgeDI';
+import Button from '../components/Button';
+import ScheduleModal from '../components/ScheduleModal';
 
 // ----- Fake check-in history, per language --------------------------------
 // type: 'checkin' | 'missed' | 'alert'
@@ -97,6 +99,7 @@ const BAND_BADGE_COLOR = { low: 'teal', moderate: 'amber', high: 'red' };
 export default function TimelineTrends() {
   const [language, setLanguage] = useState('en');
   const [filter, setFilter] = useState('10');
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const t = COPY[language];
   const fullHistory = HISTORY_BY_LANG[language];
@@ -282,6 +285,19 @@ export default function TimelineTrends() {
           ))}
         </ul>
       </Card>
+      <Button
+        type="button"
+        onClick={() => setScheduleOpen(true)}
+        className="flex items-center justify-center gap-2 rounded-full bg-teal-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm shadow-teal-900/40 hover:bg-teal-400"
+      >
+        Schedule a Follow-up
+      </Button>
+
+      <ScheduleModal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={(data) => console.log("Scheduled:", data)}
+      />
     </div>
   );
 }

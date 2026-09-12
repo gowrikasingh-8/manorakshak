@@ -2,11 +2,22 @@ import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 
+const demoCredentials = {
+  victim: { email: "victim@demo.com", password: "demo1234" },
+  staff: { email: "counsellor@demo.com", password: "demo1234" },
+};
+
 export default function Login({ onLogin }) {
   const [role, setRole] = useState("victim");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(demoCredentials.victim.email);
+  const [password, setPassword] = useState(demoCredentials.victim.password);
   const [error, setError] = useState("");
+
+  const handleRoleChange = (newRole) => {
+    setRole(newRole);
+    setEmail(demoCredentials[newRole].email);
+    setPassword(demoCredentials[newRole].password);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,7 +40,7 @@ export default function Login({ onLogin }) {
             <label className="text-sm text-slate-300 block mb-1">I am a</label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => handleRoleChange(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-sm"
             >
               <option value="victim">Victim / Complainant</option>

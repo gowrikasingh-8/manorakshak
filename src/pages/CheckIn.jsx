@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import ScheduleModal from "../components/ScheduleModal";
 /**
  * CheckIn.jsx
  * Calm, accessible victim-support check-in UI.
@@ -99,10 +100,10 @@ export default function CheckIn({
   const [error, setError] = useState("");
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
-
+  const [scheduleOpen, setScheduleOpen] = useState(false);
   const recognitionRef = useRef(null);
   const saveTimer = useRef(null);
-
+  const navigate = useNavigate();
   const current = questions[step];
   const total = questions.length;
   const progress = Math.round(((step + 1) / total) * 100);
@@ -344,15 +345,53 @@ export default function CheckIn({
               need to disclose sensitive details just to use this experience.
             </div>
 
+            <div className="mt-7 flex flex-col gap-3"></div>
+
+          <div className="mt-7 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/result")}
+              className="w-full rounded-xl bg-teal-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-teal-500"
+            >
+              View My Result
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/trends")}
+              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              View My Trends
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/support")}
+              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Explore Support Options
+            </button>
+            <button
+              type="button"
+              onClick={() => setScheduleOpen(true)}
+              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Schedule a Follow-up
+            </button>
             <button
               type="button"
               onClick={restart}
-              className="mt-7 w-full rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200"
+              className="w-full rounded-xl px-5 py-3.5 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50"
             >
               Start another check-in
             </button>
-          </section>
-        </div>
+          </div>
+        </section>
+      </div>
+
+        <ScheduleModal
+          open={scheduleOpen}
+          onClose={() => setScheduleOpen(false)}
+          onConfirm={(data) => console.log("Scheduled:", data)}
+        />
       </main>
     );
   }
