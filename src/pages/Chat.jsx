@@ -250,7 +250,12 @@ export default function Chat() {
       {/* Message list */}
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
-          <p className="mt-10 text-center text-sm text-slate-500">{t.emptyState}</p>
+          <div className="flex flex-col items-center justify-center mt-16 gap-3 px-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xl">
+              💬
+            </div>
+            <p className="text-slate-300 text-sm font-medium">{t.emptyState}</p>
+          </div>
         )}
 
         {messages.map((msg) => (
