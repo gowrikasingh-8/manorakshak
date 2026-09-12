@@ -12,6 +12,12 @@ import {
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/PageTransition";
 import TopProgressBar from "./components/TopProgressBar";
+<<<<<<< Updated upstream
+=======
+import { Sun, Moon } from "lucide-react";
+import QuickExit from "./components/QuickExit";
+import QuickExitPage from "./pages/QuickExitPage";
+>>>>>>> Stashed changes
 import { LanguageProvider } from "./LanguageContext";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import Landing from "./pages/Landing";
@@ -66,6 +72,11 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+
+  // Quick exit route — must be reachable regardless of login state
+  if (location.pathname === "/quick-exit") {
+    return <QuickExitPage />;
+  }
 
   const handleLogin = (selectedRole) => {
     onLogin(selectedRole);
@@ -123,6 +134,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
           {role === "staff" ? "Staff Portal" : "Support Space"}
         </span>
 
+<<<<<<< Updated upstream
                 {/* Right — notifications + theme toggle + logout grouped together */}
         <div className="flex items-center gap-2">
           <button
@@ -140,6 +152,19 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
           </button>
         </div>
       </div>
+=======
+  {/* Right — theme toggle + logout grouped together */}
+  <div className="flex items-center gap-2">
+    <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
+      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+    </button>
+    {role === "victim" && <QuickExit onLogout={onLogout} />}
+    <button onClick={onLogout} className="text-teal-100 text-xs hover:text-white px-2 py-1">
+      Logout
+    </button>
+  </div>
+</div>
+>>>>>>> Stashed changes
 
       {/* SIDE MENU */}
       {menuOpen && (
@@ -207,6 +232,11 @@ export default function App() {
   const handleConsent = () => {
     setHasConsented(true);
   };
+
+  // Quick exit route — must be reachable regardless of login state
+  if (location.pathname === "/quick-exit") {
+    return <QuickExitPage />;
+  }
 
   const handleLogin = (selectedRole) => {
     setRole(selectedRole);
