@@ -292,7 +292,6 @@ export default function EscalationWorkflow() {
                         </div>
                     </Card>
                 </div>
-
             </div>
         </div>
     );

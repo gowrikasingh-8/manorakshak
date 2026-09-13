@@ -82,7 +82,19 @@ function CounsellorDashboard() {
                         </h1>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate("/national")}
+                        >
+                            National Dashboard
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate("/alerts")}
+                        >
+                            View Alerts
+                        </Button>
                         <Button
                             variant="outline"
                             onClick={() => navigate("/assign")}
@@ -278,8 +290,17 @@ function CounsellorDashboard() {
 
                                     </div>
 
-                                    {/* CONTACT BUTTON */}
-                                    <div className="mt-6 flex justify-end">
+                                      {/* ACTION BUTTONS */}
+                                    <div className="mt-6 flex flex-wrap justify-end gap-2">
+
+                                        <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                                navigate("/case-detail", { state: { caseId: item.id } })
+                                            }
+                                        >
+                                            View Case Detail
+                                        </Button>
 
                                         <Button
                                             onClick={() =>

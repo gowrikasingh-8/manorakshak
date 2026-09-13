@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 import Button from "../components/Button";
 
@@ -54,6 +55,7 @@ const counsellors = [
 ];
 
 export default function CaseAssignment() {
+    const navigate = useNavigate();
     const [cases, setCases] = useState(initialCases);
     const [selectedCase, setSelectedCase] = useState(null);
     const [selectedCounsellor, setSelectedCounsellor] = useState(null);
@@ -113,19 +115,25 @@ export default function CaseAssignment() {
             <div className="max-w-7xl mx-auto">
 
                 {/* Header */}
-                <div className="mb-8">
-                    <p className="text-teal-400 font-medium mb-2">
-                        P25 • CASE MANAGEMENT
-                    </p>
+                <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                    <div>
+                        <p className="text-teal-400 font-medium mb-2">
+                            P25 • CASE MANAGEMENT
+                        </p>
 
-                    <h1 className="text-3xl md:text-4xl font-bold">
-                        Case Assignment Workspace
-                    </h1>
+                        <h1 className="text-3xl md:text-4xl font-bold">
+                            Case Assignment Workspace
+                        </h1>
 
-                    <p className="text-slate-400 mt-2">
-                        Distribute cases based on counsellor availability, workload and
-                        case priority.
-                    </p>
+                        <p className="text-slate-400 mt-2">
+                            Distribute cases based on counsellor availability, workload and
+                            case priority.
+                        </p>
+                    </div>
+
+                    <Button variant="outline" onClick={() => navigate("/referrals")}>
+                        Track Referrals
+                    </Button>
                 </div>
 
                 {/* Workflow */}
@@ -215,12 +223,22 @@ export default function CaseAssignment() {
                                             Due: {caseItem.dueDate}
                                         </p>
 
-                                        <Button
-                                            className="w-full mt-4"
-                                            onClick={() => handleSelectCase(caseItem)}
-                                        >
-                                            Select Case
-                                        </Button>
+                                        <div className="flex gap-2 mt-4">
+                                            <Button
+                                                className="flex-1"
+                                                onClick={() => handleSelectCase(caseItem)}
+                                            >
+                                                Select Case
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    navigate("/case-detail", { state: { caseId: caseItem.id } })
+                                                }
+                                            >
+                                                Details
+                                            </Button>
+                                        </div>
                                     </div>
                                 ))}
 

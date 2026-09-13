@@ -18,6 +18,7 @@ import {
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Badge from '../components/BadgeDI';
+import { useNavigate } from 'react-router-dom';
 
 // ----- Fake case record store, per language --------------------------------
 // Keyed by caseId. Swap getCaseById() for a real API call later — the UI
@@ -191,10 +192,10 @@ function useCaseRecord(caseId, language) {
 }
 
 export default function CaseDetail({ caseId = 'C-10432' }) {
+  const navigate = useNavigate();
   const [language, setLanguage] = useState('en');
   const [activeCaseId, setActiveCaseId] = useState(caseId);
   const { isLoading, data } = useCaseRecord(activeCaseId, language);
-
   const [status, setStatus] = useState('in_progress');
   const [notes, setNotes] = useState([]);
   const [noteDraft, setNoteDraft] = useState('');
@@ -485,7 +486,7 @@ export default function CaseDetail({ caseId = 'C-10432' }) {
             </ul>
           </Card>
 
-          {/* Explanation drawer */}
+                    {/* Explanation drawer */}
           <Card className="rounded-2xl border border-slate-800 bg-slate-900 p-0">
             <button
               type="button"
@@ -506,6 +507,15 @@ export default function CaseDetail({ caseId = 'C-10432' }) {
               </p>
             )}
           </Card>
+
+          {/* Link to full AI Insight Center */}
+          <Button
+            type="button"
+            onClick={() => navigate('/insights', { state: { caseId: activeCaseId } })}
+            className="flex items-center justify-center gap-2 rounded-full bg-teal-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm shadow-teal-900/40 hover:bg-teal-400"
+          >
+            Open Full AI Insight Center
+          </Button>
         </>
       )}
     </div>

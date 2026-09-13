@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 
 const demoCredentials = {
-  victim: { email: "victim@demo.com", password: "demo1234" },
+  victim: { email: "user@demo.com", password: "demo1234" },
   staff: { email: "counsellor@demo.com", password: "demo1234" },
 };
 
@@ -43,7 +43,7 @@ export default function Login({ onLogin }) {
               onChange={(e) => handleRoleChange(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-sm"
             >
-              <option value="victim">Victim / Complainant</option>
+              <option value="victim">user</option>
               <option value="staff">Counsellor / Authority</option>
             </select>
           </div>

@@ -1,8 +1,11 @@
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
+import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
 export default function NationalDashboard() {
+  const navigate = useNavigate();
   const kpis = [
     { label: "Active Cases", value: "1,284" },
     { label: "High Risk Cases", value: "97" },
@@ -34,9 +37,14 @@ export default function NationalDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-teal-400">National Dashboard</h1>
-        <p className="text-slate-400 text-sm">Aggregated, anonymized overview across all districts.</p>
+            <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-teal-400">National Dashboard</h1>
+          <p className="text-slate-400 text-sm">Aggregated, anonymized overview across all districts.</p>
+        </div>
+        <Button onClick={() => navigate("/reports")}>
+          View Full Reports
+        </Button>
       </header>
 
       {/* KPI cards */}
