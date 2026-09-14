@@ -3,14 +3,6 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 
-/**
- * NOTE on assumed component APIs (adjust if your actual components differ):
- * <Button variant="primary" | "secondary" | "ghost" | "outline" size="sm" | "md" onClick disabled>
- * <Card className children>
- * <Badge variant="info" | "success" | "warning" | "default">{label}</Badge>
- * If your Button/Card/Badge take different prop names, tell me and I'll adjust.
- */
-
 const CATEGORY_META = {
   reminder: { label: "Reminder", badgeVariant: "info" },
   appointment: { label: "Appointment", badgeVariant: "warning" },
@@ -94,7 +86,7 @@ function MiniToggle({ on, onClick, label }) {
   );
 }
 
-export default function NotificationsPage() {
+export default function NotificationsPage({ onCheckInClick }) {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -235,7 +227,17 @@ export default function NotificationsPage() {
 
                       {/* ACTION BUTTONS */}
                       <div className="flex flex-wrap gap-2 mt-3 ml-5">
-                        <Button variant="primary" size="sm">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => {
+                            if (n.category === "checkin" && onCheckInClick) {
+                              onCheckInClick(n);
+                            } else {
+                              console.log("Clicked action:", n.action);
+                            }
+                          }}
+                        >
                           {n.action}
                         </Button>
                         {n.unread && (
