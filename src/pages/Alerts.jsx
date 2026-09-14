@@ -144,6 +144,11 @@ function Alerts() {
         );
     };
 
+    const handleAssign = (alert) => {
+        updateAlert(alert.id, "assign");
+        navigate("/assign", { state: { alertId: alert.id, alertType: alert.type, alertReason: alert.reason } });
+    };
+
     const handleEscalate = (alert) => {
         updateAlert(alert.id, "escalate");
         navigate("/escalate", { state: { alertId: alert.id, alertType: alert.type, alertReason: alert.reason } });
@@ -183,7 +188,7 @@ function Alerts() {
                 <div className="mx-auto max-w-7xl px-6 py-5">
 
                     <p className="text-sm text-teal-400">
-                        Binary Brains • Alert Management
+                        Manorakshak • Alert Management
                     </p>
 
                     <h1 className="mt-1 text-2xl font-bold text-white">
@@ -463,9 +468,7 @@ function Alerts() {
 
                                     <Button
                                         variant="outline"
-                                        onClick={() =>
-                                            updateAlert(alert.id, "assign")
-                                        }
+                                        onClick={() => handleAssign(alert)}
                                     >
                                         Assign
                                     </Button>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Globe,
   TrendingUp,
@@ -11,13 +12,13 @@ import {
   AlertTriangle,
   CheckCircle2,
   Brain,
+  UserCheck,
 } from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Badge from '../components/BadgeDI';
 
 // ----- Mock AI insight data, per language ---------------------------------
-// Shape follows the team's AI-response contract. Replace with real API later.
 const DATA_BY_LANG = {
   en: {
     caseId: 'C-10432',
@@ -103,6 +104,7 @@ const COPY = {
     actionTitle: 'Recommended human action',
     limitationsTitle: 'AI limitations',
     notDiagnosis: 'This is a support indicator, not a clinical diagnosis',
+    assignButton: 'Case Assignment',
   },
   hi: {
     title: 'AI इनसाइट सेंटर',
@@ -122,6 +124,7 @@ const COPY = {
     actionTitle: 'सुझाई गई मानवीय कार्रवाई',
     limitationsTitle: 'AI की सीमाएं',
     notDiagnosis: 'यह एक सहायता संकेतक है, क्लिनिकल निदान नहीं',
+    assignButton: 'केस असाइनमेंट',
   },
 };
 
@@ -155,6 +158,7 @@ function Drawer({ title, children, icon: Icon }) {
 }
 
 export default function AIInsightCenter() {
+  const navigate = useNavigate();
   const [language, setLanguage] = useState('en');
   const t = COPY[language];
   const data = DATA_BY_LANG[language];
@@ -173,28 +177,42 @@ export default function AIInsightCenter() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 rounded-2xl bg-slate-950 p-4 text-slate-100 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold text-teal-400">{t.title}</h1>
           <p className="mt-0.5 text-xs text-slate-500">{t.subtitle}</p>
         </div>
-        <div className="flex items-center overflow-hidden rounded-full border border-slate-700 bg-slate-800/70">
-          <Globe className="ml-2 h-3.5 w-3.5 text-teal-400" aria-hidden="true" />
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              type="button"
-              onClick={() => setLanguage(lang.code)}
-              aria-pressed={language === lang.code}
-              className={`px-2.5 py-1 text-xs font-medium transition-colors ${
-                language === lang.code
-                  ? 'bg-teal-500 text-slate-950'
-                  : 'text-slate-300 hover:text-teal-300'
-              }`}
-            >
-              {lang.label}
-            </button>
-          ))}
+        
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Case Assignment Navigation Button */}
+          <button
+            type="button"
+            onClick={() => navigate('/assign')}
+            className="flex items-center gap-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 px-3 py-1.5 text-xs font-medium text-teal-300 hover:bg-teal-500/20 transition-colors"
+          >
+            <UserCheck className="h-3.5 w-3.5" />
+            {t.assignButton}
+          </button>
+
+          {/* Language Toggle */}
+          <div className="flex items-center overflow-hidden rounded-full border border-slate-700 bg-slate-800/70">
+            <Globe className="ml-2 h-3.5 w-3.5 text-teal-400" aria-hidden="true" />
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => setLanguage(lang.code)}
+                aria-pressed={language === lang.code}
+                className={`px-2.5 py-1 text-xs font-medium transition-colors ${
+                  language === lang.code
+                    ? 'bg-teal-500 text-slate-950'
+                    : 'text-slate-300 hover:text-teal-300'
+                }`}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

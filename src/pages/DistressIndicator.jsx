@@ -14,6 +14,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import Badge from '../components/BadgeDI';
 import ScheduleModal from '../components/ScheduleModal';
+import { getQualitativeScore } from '../utils/scoreTranslator';
 
 const DATA_BY_LANG = {
   en: {
@@ -67,9 +68,9 @@ const DATA_BY_LANG = {
 };
 
 const RISK_BAND_META = {
-  low: { label: { en: 'Low concern', hi: 'कम चिंता' }, badgeColor: 'teal' },
-  moderate: { label: { en: 'Moderate concern', hi: 'मध्यम चिंता' }, badgeColor: 'amber' },
-  high: { label: { en: 'High concern', hi: 'अधिक चिंता' }, badgeColor: 'red' },
+  low: { label: { en: 'Stable & Balanced', hi: 'स्थिर और संतुलित' }, badgeColor: 'teal' },
+  moderate: { label: { en: 'Mildly Overwhelmed', hi: 'थोड़ा अभिभूत महसूस कर रहे हैं' }, badgeColor: 'amber' },
+  high: { label: { en: 'Needs Gentle Support', hi: 'कोमल सहारे की आवश्यकता है' }, badgeColor: 'red' },
 };
 
 const LANGUAGES = [
@@ -81,9 +82,9 @@ const COPY = {
   en: {
     title: 'Your Support Signal',
     disclaimer: 'This is a support signal, not a diagnosis',
-    trendUp: 'since last check-in',
-    trendDown: 'since last check-in',
-    trendStable: 'No change since last check-in',
+    trendUp: 'Shifting toward a heavier pattern since last check-in',
+    trendDown: 'Shifting toward a lighter pattern since last check-in',
+    trendStable: 'Steady and consistent since last check-in',
     signalsTitle: 'What contributed to this',
     whatThisMeans: 'What this means',
     nextStepsTitle: 'Recommended next steps',
@@ -97,9 +98,9 @@ const COPY = {
   hi: {
     title: 'आपका सपोर्ट सिग्नल',
     disclaimer: 'यह एक सहायता संकेत है, निदान नहीं',
-    trendUp: 'पिछले चेक-इन की तुलना में',
-    trendDown: 'पिछले चेक-इन की तुलना में',
-    trendStable: 'पिछले चेक-इन से कोई बदलाव नहीं',
+    trendUp: 'पिछले चेक-इन की तुलना में थोड़ा भारीपन महसूस हुआ है',
+    trendDown: 'पिछले चेक-इन की तुलना में स्थिति हल्की हुई है',
+    trendStable: 'पिछले चेक-इन से स्थिति स्थिर है',
     signalsTitle: 'इसमें किन बातों का योगदान रहा',
     whatThisMeans: 'इसका क्या मतलब है',
     nextStepsTitle: 'सुझाए गए अगले कदम',
@@ -121,14 +122,14 @@ export default function DistressIndicator() {
   const t = COPY[language];
   const data = DATA_BY_LANG[language];
   const band = RISK_BAND_META[data.riskBand];
-  const scoreDelta = data.score - data.previousScore;
+  const qualitativeState = getQualitativeScore(data.score);
 
   const TrendIcon = data.trend === 'up' ? TrendingUp : data.trend === 'down' ? TrendingDown : Minus;
   const trendLabel =
     data.trend === 'up'
-      ? `+${scoreDelta} ${t.trendUp}`
+      ? t.trendUp
       : data.trend === 'down'
-      ? `${scoreDelta} ${t.trendDown}`
+      ? t.trendDown
       : t.trendStable;
   const trendColor =
     data.trend === 'up' ? 'text-amber-400' : data.trend === 'down' ? 'text-teal-400' : 'text-slate-400';
@@ -170,14 +171,15 @@ export default function DistressIndicator() {
         <span>{t.disclaimer}</span>
       </div>
 
-      {/* Score card */}
+      {/* Qualitative State Card (Replaced Numerical Score) */}
       <Card className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <Badge color={band.badgeColor}>{band.label[language]}</Badge>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-5xl font-bold text-slate-100">{data.score}</span>
-              <span className="text-sm text-slate-500">/ 100</span>
+            <div className="mt-3">
+              <span className={`text-2xl font-bold ${qualitativeState.color}`}>
+                {qualitativeState.label}
+              </span>
             </div>
             <div className={`mt-2 flex items-center gap-1.5 text-sm font-medium ${trendColor}`}>
               <TrendIcon className="h-4 w-4" aria-hidden="true" />
@@ -244,7 +246,8 @@ export default function DistressIndicator() {
           ))}
         </ul>
       </Card>
-            {/* Human-support CTA */}
+
+      {/* Human-support CTA */}
       <div className="flex flex-col gap-2">
         <Button
           type="button"

@@ -35,7 +35,7 @@ export default function SystemStatus() {
                 {/* Header */}
                 <div className="mb-8">
                     <p className="text-teal-400 text-sm font-medium">
-                        Binary Brains • Demo Admin
+                        Manorakshak • Demo Admin
                     </p>
 
                     <h1 className="text-3xl font-bold mt-1">

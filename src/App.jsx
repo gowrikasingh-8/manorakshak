@@ -50,6 +50,7 @@ const victimLinks = [
   { to: "/support", label: "Support Hub" },
   { to: "/result", label: "My Result" },
   { to: "/trends", label: "My Trends" },
+  { to: "/library", label: "Library" },
   { to: "/notifications", label: "Notifications" },
 ];
 
@@ -60,8 +61,11 @@ const staffLinks = [
   { to: "/national", label: "National Dashboard" },
   { to: "/alerts", label: "Alerts" },
   { to: "/reports", label: "Reports" },
+  { to: "/assign", label: "Case Assignment" },
+  { to: "/escalate", label: "Escalation Workflow" },
+  { to: "/audit", label: "Audit Timeline" },
+  { to: "/referrals", label: "Referral Tracking" },
   { to: "/system", label: "System Status" },
-  { to: "/notifications", label: "Notifications" },
 ];
 
 function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout, menuOpen, setMenuOpen }) {
@@ -127,18 +131,20 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
 
         {/* Center — title, absolutely positioned so it's always truly centered */}
         <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
-          {role === "staff" ? "Staff Portal" : "Support Space"}
-        </span>
+        Manorakshak {role === "staff" ? "· Staff Portal" : "· Support Space"}
+          </span>
 
-        {/* Right — notifications + theme toggle + quick exit + logout grouped together */}
+        {/* Right — notifications (only for victims/users) + theme toggle + quick exit + logout grouped together */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate("/notifications")}
-            className="p-2 rounded-full hover:bg-teal-700 text-white"
-            aria-label="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-          </button>
+          {role === "victim" && (
+            <button
+              onClick={() => navigate("/notifications")}
+              className="p-2 rounded-full hover:bg-teal-700 text-white"
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+            </button>
+          )}
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -152,7 +158,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
       {/* SIDE MENU */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex">
-          <div className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col gap-4">
+          <div className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col gap-4 overflow-y-auto">
             <button onClick={() => setMenuOpen(false)} className="self-end text-slate-400 text-sm mb-4">
               ✕ Close
             </button>

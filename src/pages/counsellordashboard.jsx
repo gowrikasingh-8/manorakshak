@@ -74,7 +74,7 @@ function CounsellorDashboard() {
 
                     <div>
                         <p className="text-sm text-teal-400">
-                            Binary Brains • Counsellor Portal
+                            Counsellor Portal
                         </p>
 
                         <h1 className="mt-1 text-2xl font-bold text-white">

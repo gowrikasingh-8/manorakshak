@@ -32,8 +32,9 @@ export default function Login({ onLogin }) {
   return (
     <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
       <Card className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-teal-400 mb-1">Welcome Back</h1>
-        <p className="text-slate-400 text-sm mb-6">Sign in to continue.</p>
+        <h1 className="text-2xl font-bold text-teal-400 mb-1">Manorakshak</h1>
+        <p className="text-slate-400 text-xs mb-4">Welcome back</p>
+                <p className="text-slate-400 text-sm mb-6">Sign in to continue.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>

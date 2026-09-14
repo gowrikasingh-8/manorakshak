@@ -118,7 +118,7 @@ export default function CaseAssignment() {
                 <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div>
                         <p className="text-teal-400 font-medium mb-2">
-                            P25 • CASE MANAGEMENT
+                            CASE MANAGEMENT
                         </p>
 
                         <h1 className="text-3xl md:text-4xl font-bold">

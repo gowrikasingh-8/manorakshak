@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -6,8 +5,9 @@ import ParticleField from "../components/ParticleField";
 import InfoCarousel from "../components/InfoCarousel";
 import FadeIn from "../components/FadeIn";
 import { useTheme } from "../ThemeContext";
+import { useLanguage } from "../LanguageContext";
+import { useState } from "react";
 
-// ── All translations live here — no LanguageContext needed ─────────────────
 const TRANSLATIONS = {
   English: {
     heroTitle: "You Are Not Alone. We Are Here to Support You.",
@@ -130,11 +130,10 @@ const BASE = TRANSLATIONS["English"];
 
 export default function Landing({ onContinue }) {
   const { theme, toggleTheme } = useTheme();
-  const [language, setLanguage] = useState("English");
+  const { language, setLanguage } = useLanguage();
   const [reducedMotion, setReducedMotion] = useState(false);
   const [textSize, setTextSize] = useState("normal");
 
-  // Merge: full translation if available, else English + language-specific overrides
   const t = { ...BASE, ...(TRANSLATIONS[language] || {}) };
 
   const textSizeClass = textSize === "large" ? "text-lg" : textSize === "small" ? "text-sm" : "text-base";
@@ -143,7 +142,6 @@ export default function Landing({ onContinue }) {
   return (
     <div className={`min-h-screen relative overflow-hidden ${textSizeClass} ${isDark ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-900"}`}>
 
-      {/* Animated blur blobs */}
       {!reducedMotion && (
         <div className="absolute inset-0 pointer-events-none opacity-20">
           <div className="absolute w-72 h-72 bg-teal-500 rounded-full blur-3xl top-10 left-10 animate-pulse" />
@@ -151,46 +149,51 @@ export default function Landing({ onContinue }) {
         </div>
       )}
 
-      {/* ParticleField */}
       {!reducedMotion && (
         <div className="absolute inset-0 pointer-events-none opacity-40">
           <ParticleField />
         </div>
       )}
 
-      {/* Top bar */}
-      <div className="relative z-10 flex flex-wrap justify-end items-center gap-2 px-6 pt-5">
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-800"}`}
-          aria-label="Select language"
-        >
-          {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
-        </select>
+      {/* Top bar with brand name */}
+      <div className="relative z-10 flex flex-wrap justify-between items-center gap-2 px-6 pt-5">
+        <span className="text-lg font-bold tracking-wide text-teal-400">
+          MANORAKSHAK
+        </span>
 
-        <button
-          onClick={() => setTextSize((s) => s === "small" ? "normal" : s === "normal" ? "large" : "small")}
-          className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
-        >
-          {textSize === "small" ? "A Normal" : textSize === "normal" ? "A+ Larger" : "A- Smaller"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-800"}`}
+            aria-label="Select language"
+          >
+            {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+          </select>
 
-        <button
-          onClick={() => setReducedMotion((v) => !v)}
-          aria-pressed={reducedMotion}
-          className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
-        >
-          {reducedMotion ? t.motionOff : t.reduceMotion}
-        </button>
+          <button
+            onClick={() => setTextSize((s) => s === "small" ? "normal" : s === "normal" ? "large" : "small")}
+            className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
+          >
+            {textSize === "small" ? "A Normal" : textSize === "normal" ? "A+ Larger" : "A- Smaller"}
+          </button>
 
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className={`border rounded-md px-3 py-1.5 text-sm flex items-center gap-1 ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
-        >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
+          <button
+            onClick={() => setReducedMotion((v) => !v)}
+            aria-pressed={reducedMotion}
+            className={`border rounded-md px-3 py-1.5 text-sm ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
+          >
+            {reducedMotion ? t.motionOff : t.reduceMotion}
+          </button>
+
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className={`border rounded-md px-3 py-1.5 text-sm flex items-center gap-1 ${isDark ? "bg-slate-800 border-slate-700 hover:bg-slate-700" : "bg-white border-slate-300 hover:bg-slate-100"}`}
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Hero */}
@@ -202,7 +205,7 @@ export default function Landing({ onContinue }) {
         </section>
       </FadeIn>
 
-      {/* InfoCarousel — uses its own internal slides (helpline, quotes, platform info) */}
+      {/* InfoCarousel — reads language from shared context automatically */}
       <FadeIn delay={0.1}>
         <section className="relative z-10 px-6 pb-16">
           <InfoCarousel />
