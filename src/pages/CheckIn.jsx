@@ -4,7 +4,7 @@ import ScheduleModal from "../components/ScheduleModal";
 /**
  * CheckIn.jsx
  * Calm, accessible victim-support check-in UI.
- * Requires Tailwind CSS.
+ * Requires Tailwind CSS with darkMode: "class".
  *
  * Features:
  * - One question at a time
@@ -321,10 +321,10 @@ export default function CheckIn({
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
+      <main className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-8 text-slate-900 dark:text-slate-100">
         <div className="mx-auto flex min-h-[80vh] max-w-2xl items-center justify-center">
-          <section className="w-full rounded-3xl border border-slate-200 bg-white p-7 text-center shadow-sm sm:p-10">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-xl text-emerald-700">
+          <section className="w-full rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-7 text-center shadow-sm sm:p-10">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-xl text-emerald-700 dark:text-emerald-400">
               ✓
             </div>
 
@@ -332,60 +332,60 @@ export default function CheckIn({
               Thank you for checking in
             </h1>
 
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600">
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600 dark:text-slate-400">
               Your responses have been saved as support information. They are
               not a medical diagnosis. Authorized support staff can use the
               information according to your organization&apos;s privacy and
               safeguarding procedures.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left text-sm leading-6 text-slate-600">
-              <strong className="text-slate-800">You are in control.</strong>{" "}
+            <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4 text-left text-sm leading-6 text-slate-600 dark:text-slate-400">
+              <strong className="text-slate-800 dark:text-slate-200">
+                You are in control.
+              </strong>{" "}
               You can choose what to share during a check-in, and you never
               need to disclose sensitive details just to use this experience.
             </div>
 
-            <div className="mt-7 flex flex-col gap-3"></div>
-
-          <div className="mt-7 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={() => navigate("/result")}
-              className="w-full rounded-xl bg-teal-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-teal-500"
-            >
-              View My Result
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/trends")}
-              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              View My Trends
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/support")}
-              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Explore Support Options
-            </button>
-            <button
-              type="button"
-              onClick={() => setScheduleOpen(true)}
-              className="w-full rounded-xl border border-slate-300 px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Schedule a Follow-up
-            </button>
-            <button
-              type="button"
-              onClick={restart}
-              className="w-full rounded-xl px-5 py-3.5 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            >
-              Start another check-in
-            </button>
-          </div>
-        </section>
-      </div>
+            <div className="mt-7 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => navigate("/result")}
+                className="w-full rounded-xl bg-teal-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-teal-500"
+              >
+                View My Result
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/trends")}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-3.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                View My Trends
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/support")}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-3.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Explore Support Options
+              </button>
+              <button
+                type="button"
+                onClick={() => setScheduleOpen(true)}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-3.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Schedule a Follow-up
+              </button>
+              <button
+                type="button"
+                onClick={restart}
+                className="w-full rounded-xl px-5 py-3.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Start another check-in
+              </button>
+            </div>
+          </section>
+        </div>
 
         <ScheduleModal
           open={scheduleOpen}
@@ -397,26 +397,26 @@ export default function CheckIn({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:px-6 sm:py-10">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-6 text-slate-900 dark:text-slate-100 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-3xl">
         {/* Header */}
         <header className="mb-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-sm font-semibold text-slate-500">
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
                 Support check-in
               </p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
                 How are you doing today?
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
                 A short, optional check-in to help your support team understand
                 what kind of support may be useful.
               </p>
             </div>
 
             <div
-              className="flex items-center gap-2 text-xs text-slate-500"
+              className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
               aria-live="polite"
             >
               <span
@@ -433,20 +433,20 @@ export default function CheckIn({
         {/* Privacy notice */}
         <div
           role="note"
-          className="mb-6 flex gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+          className="mb-6 flex gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm"
         >
           <div
             aria-hidden="true"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-sm"
           >
             🔒
           </div>
 
           <div>
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               Share only what feels safe
             </p>
-            <p className="mt-1 text-xs leading-5 text-slate-600">
+            <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
               Every question can be skipped. This check-in supports human
               decision-making and does not diagnose a medical or mental-health
               condition.
@@ -457,23 +457,23 @@ export default function CheckIn({
         {/* Step indicator */}
         <nav
           aria-label="Check-in progress"
-          className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+          className="mb-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm"
         >
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm font-semibold">
               Step {step + 1} of {total}
             </span>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
               {progress}% complete
             </span>
           </div>
 
           <div
-            className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"
+            className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700"
             aria-hidden="true"
           >
             <div
-              className="h-full rounded-full bg-slate-700 transition-all duration-300"
+              className="h-full rounded-full bg-slate-700 dark:bg-teal-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -483,9 +483,11 @@ export default function CheckIn({
               <div
                 key={question.id}
                 className={`h-1.5 flex-1 rounded-full ${
-                  index <= step || hasValue(answers[question.id]) || skipped[question.id]
-                    ? "bg-slate-700"
-                    : "bg-slate-100"
+                  index <= step ||
+                  hasValue(answers[question.id]) ||
+                  skipped[question.id]
+                    ? "bg-slate-700 dark:bg-teal-500"
+                    : "bg-slate-100 dark:bg-slate-700"
                 }`}
               />
             ))}
@@ -495,10 +497,10 @@ export default function CheckIn({
         {/* Question */}
         <section
           aria-labelledby={`question-${current.id}`}
-          className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+          className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm sm:p-8"
         >
           <div className="mb-7">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
               Optional question
             </p>
 
@@ -510,7 +512,7 @@ export default function CheckIn({
             </h2>
 
             {current.description && (
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
                 {current.description}
               </p>
             )}
@@ -528,10 +530,10 @@ export default function CheckIn({
                     type="button"
                     onClick={() => updateAnswer(option.value)}
                     aria-pressed={selected}
-                    className={`min-h-[88px] rounded-2xl border p-4 text-left transition focus:outline-none focus:ring-4 focus:ring-slate-200 ${
+                    className={`min-h-[88px] rounded-2xl border p-4 text-left transition focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 ${
                       selected
-                        ? "border-slate-700 bg-slate-100 ring-2 ring-slate-700"
-                        : "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50"
+                        ? "border-slate-700 dark:border-teal-500 bg-slate-100 dark:bg-slate-700 ring-2 ring-slate-700 dark:ring-teal-500"
+                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
                     }`}
                   >
                     <span className="text-xl" aria-hidden="true">
@@ -561,22 +563,20 @@ export default function CheckIn({
                     type="button"
                     onClick={() => selectChoice(option.value)}
                     aria-pressed={selected}
-                    className={`flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition focus:outline-none focus:ring-4 focus:ring-slate-200 ${
+                    className={`flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 ${
                       selected
-                        ? "border-slate-700 bg-slate-50"
-                        : "border-slate-200 hover:border-slate-400 hover:bg-slate-50"
+                        ? "border-slate-700 dark:border-teal-500 bg-slate-50 dark:bg-slate-700"
+                        : "border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
                     }`}
                   >
-                    <span className="text-sm font-medium">
-                      {option.label}
-                    </span>
+                    <span className="text-sm font-medium">{option.label}</span>
 
                     <span
                       aria-hidden="true"
                       className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs ${
                         selected
-                          ? "border-slate-700 bg-slate-700 text-white"
-                          : "border-slate-300 bg-white text-transparent"
+                          ? "border-slate-700 dark:border-teal-500 bg-slate-700 dark:bg-teal-500 text-white"
+                          : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent"
                       }`}
                     >
                       ✓
@@ -600,12 +600,12 @@ export default function CheckIn({
                 placeholder={current.placeholder}
                 maxLength={current.maxLength || 1000}
                 rows={7}
-                className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:bg-white focus:ring-4 focus:ring-slate-100"
+                className="w-full resize-none rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-4 text-sm leading-6 text-slate-900 dark:text-slate-100 outline-none transition placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-slate-500 dark:focus:border-teal-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-700"
                 aria-label="Your response"
               />
 
               <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-400 dark:text-slate-500">
                   {String(answers[current.id] || "").length}/
                   {current.maxLength || 1000}
                 </span>
@@ -615,10 +615,10 @@ export default function CheckIn({
                     type="button"
                     onClick={listening ? stopVoiceInput : startVoiceInput}
                     aria-pressed={listening}
-                    className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200 ${
+                    className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 ${
                       listening
-                        ? "border-slate-700 bg-slate-800 text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        ? "border-slate-700 dark:border-teal-500 bg-slate-800 dark:bg-teal-600 text-white"
+                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
                     }`}
                   >
                     <span aria-hidden="true">{listening ? "■" : "🎙"}</span>
@@ -629,7 +629,7 @@ export default function CheckIn({
 
               {listening && (
                 <p
-                  className="mt-3 text-xs text-slate-500"
+                  className="mt-3 text-xs text-slate-500 dark:text-slate-400"
                   aria-live="polite"
                 >
                   Listening… speak when you are ready. You can stop at any
@@ -643,18 +643,18 @@ export default function CheckIn({
           {error && (
             <p
               role="alert"
-              className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+              className="mt-5 rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 px-4 py-3 text-sm text-amber-800 dark:text-amber-300"
             >
               {error}
             </p>
           )}
 
           {/* Controls */}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 dark:border-slate-700 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
               onClick={skipQuestion}
-              className="rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 underline-offset-4 hover:bg-slate-50 hover:underline focus:outline-none focus:ring-4 focus:ring-slate-100"
+              className="rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 underline-offset-4 hover:bg-slate-50 dark:hover:bg-slate-700 hover:underline focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-700"
             >
               Skip / decline
             </button>
@@ -664,7 +664,7 @@ export default function CheckIn({
                 type="button"
                 onClick={previous}
                 disabled={step === 0}
-                className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-4 focus:ring-slate-100"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-700"
               >
                 Back
               </button>
@@ -672,7 +672,7 @@ export default function CheckIn({
               <button
                 type="button"
                 onClick={next}
-                className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200"
+                className="rounded-xl bg-slate-900 dark:bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:hover:bg-teal-500 focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700"
               >
                 {step === total - 1 ? "Save & submit" : "Save & continue"}
               </button>
@@ -681,7 +681,7 @@ export default function CheckIn({
         </section>
 
         {/* Footer */}
-        <footer className="mt-6 text-center text-xs leading-5 text-slate-500">
+        <footer className="mt-6 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
           <p>
             Your responses are intended to support human review. They should
             not be presented as an AI diagnosis or medical assessment.

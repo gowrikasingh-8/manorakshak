@@ -106,7 +106,7 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
   const links = role === "staff" ? staffLinks : victimLinks;
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
       <TopProgressBar />
 
       {/* TOP BAR */}
@@ -131,8 +131,8 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
 
         {/* Center — title, absolutely positioned so it's always truly centered */}
         <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
-        Manorakshak {role === "staff" ? "· Staff Portal" : "· Support Space"}
-          </span>
+          Manorakshak {role === "staff" ? "· Staff Portal" : "· Support Space"}
+        </span>
 
         {/* Right — notifications (only for victims/users) + theme toggle + quick exit + logout grouped together */}
         <div className="flex items-center gap-2">
