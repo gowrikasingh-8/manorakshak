@@ -52,10 +52,9 @@ const LANGUAGES = [
   { code: 'hi', label: 'हिं' },
 ];
 
-// Helper to translate scores into distinct qualitative labels and colors dynamically
 const getDynamicQualitativeState = (score, lang = 'en') => {
   if (score == null) return null;
-  
+
   if (score < 45) {
     return {
       label: lang === 'hi' ? 'शांत और संतुलित' : 'Steady & Balanced',
@@ -111,7 +110,7 @@ const COPY = {
   },
 };
 
-export default function TimelineTrends() {
+export default function TimelineTrends({ role = 'victim' }) {
   const [language, setLanguage] = useState('en');
   const [filter, setFilter] = useState('10');
   const [scheduleOpen, setScheduleOpen] = useState(false);
@@ -297,7 +296,9 @@ export default function TimelineTrends() {
                     )}
                     {entry.type === 'alert' && <Badge color="red">{t.alertLabel}</Badge>}
                   </div>
-                  <p className="mt-1 truncate text-sm text-slate-300">{entry.note}</p>
+                  {role !== 'family' && (
+                    <p className="mt-1 truncate text-sm text-slate-300">{entry.note}</p>
+                  )}
                 </div>
               </li>
             );
