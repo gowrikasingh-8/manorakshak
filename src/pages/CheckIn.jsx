@@ -1,75 +1,133 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScheduleModal from "../components/ScheduleModal";
+
 /**
  * CheckIn.jsx
  * Calm, accessible victim-support check-in UI.
  * Requires Tailwind CSS with darkMode: "class".
- *
- * Features:
- * - One question at a time
- * - Step indicator + progress
- * - Skip / decline
- * - Emotion chips
- * - Text input
- * - Optional microphone / browser speech recognition
- * - Autosave to localStorage
- * - Save & continue
- * - Final submit
- * - No diagnosis or clinical scoring
  */
 
 const DEFAULT_QUESTIONS = [
   {
-    id: "overall",
-    title: "How are things feeling for you right now?",
-    description:
-      "Choose an option that feels comfortable. You do not need to explain why.",
+    id: "overall_emotional_state",
+    title: "1. Overall Emotional State",
+    description: "How would you rate your general emotional state or mood today?",
     type: "emotion",
     options: [
-      { value: "calm", label: "Calm", emoji: "😌" },
-      { value: "okay", label: "Okay", emoji: "🙂" },
-      { value: "uneasy", label: "Uneasy", emoji: "😕" },
-      { value: "overwhelmed", label: "Overwhelmed", emoji: "😣" },
+      { value: "calm", label: "Calm & Grounded", emoji: "😌" },
+      { value: "okay", label: "Okay / Stable", emoji: "🙂" },
+      { value: "uneasy", label: "Uneasy / Anxious", emoji: "😕" },
+      { value: "overwhelmed", label: "Overwhelmed / Distressed", emoji: "😣" },
       { value: "prefer-not", label: "Prefer not to say", emoji: "—" },
     ],
   },
   {
-    id: "support",
-    title: "What would feel most helpful today?",
-    description:
-      "Select anything that sounds useful. You can choose more than one.",
+    id: "distress_spikes",
+    title: "2. Distress Spikes",
+    description: "Did you experience any sharp spikes in anxiety, distress, or panic during the day?",
+    type: "choice",
+    options: [
+      { value: "none", label: "No significant spikes" },
+      { value: "mild", label: "Yes, mild or brief spikes" },
+      { value: "severe", label: "Yes, intense or prolonged spikes" },
+      { value: "prefer-not", label: "Prefer not to say" },
+    ],
+  },
+  {
+    id: "grounding_regulation",
+    title: "3. Grounding & Regulation",
+    description: "Were you able to use any grounding techniques or feel grounded when feeling overwhelmed?",
+    type: "choice",
+    options: [
+      { value: "yes-effective", label: "Yes, and it helped" },
+      { value: "tried-difficult", label: "Tried, but it was difficult" },
+      { value: "no-couldnt", label: "No / Could not bring myself to" },
+      { value: "not-needed", label: "Did not feel overwhelmed today" },
+    ],
+  },
+  {
+    id: "mental_clarity_fog",
+    title: "4. Mental Clarity & Fog",
+    description: "How clear was your mind today, or did you feel heavy mental fog / dissociation?",
+    type: "choice",
+    options: [
+      { value: "clear", label: "Clear & Focused" },
+      { value: "slight-fog", label: "Slight mental fog" },
+      { value: "heavy-fog", label: "Heavy fog / Dissociation" },
+      { value: "prefer-not", label: "Prefer not to say" },
+    ],
+  },
+  {
+    id: "sleep_quality",
+    title: "5. Sleep Quality",
+    description: "How restorative or peaceful was your sleep last night?",
+    type: "choice",
+    options: [
+      { value: "restful", label: "Restful & Sufficient" },
+      { value: "interrupted", label: "Interrupted / Restless" },
+      { value: "insufficient", label: "Very little or no sleep" },
+      { value: "nightmares", label: "Disturbed by nightmares / anxiety" },
+    ],
+  },
+  {
+    id: "basic_physical_care",
+    title: "6. Basic Physical Care",
+    description: "Were you able to meet your basic daily needs today (eating, hydrating, moving)?",
     type: "choice",
     multiple: true,
     options: [
-      { value: "someone-listen", label: "Someone to listen" },
-      { value: "practical-help", label: "Practical support" },
-      { value: "resources", label: "Information or resources" },
-      { value: "follow-up", label: "A follow-up from my support team" },
-      { value: "quiet", label: "Some quiet time" },
+      { value: "meals", label: "Ate regular meals" },
+      { value: "hydration", label: "Stayed hydrated" },
+      { value: "movement", label: "Got some physical movement / rest" },
+      { value: "struggled", label: "Struggled with basic daily tasks today" },
     ],
   },
   {
-    id: "checkin",
-    title: "Is there anything you would like your support team to know?",
-    description:
-      "Share only what you are comfortable sharing. You can keep your response general.",
-    type: "text",
-    placeholder: "You can write a short note here...",
-    maxLength: 1000,
+    id: "coping_tool_effectiveness",
+    title: "7. Coping Tool Effectiveness",
+    description: "Did any self-soothing or coping strategies help ease your mind today?",
+    type: "choice",
+    multiple: true,
+    options: [
+      { value: "breathing", label: "Breathing or relaxation exercises" },
+      { value: "journaling", label: "Writing or expressing thoughts" },
+      { value: "distraction", label: "Distraction (music, media, walks)" },
+      { value: "none-worked", label: "Nothing seemed to help today" },
+    ],
   },
   {
-    id: "followup",
-    title: "Would you like someone from your support team to check in with you?",
-    description:
-      "This is optional. It does not replace emergency or medical services.",
+    id: "social_connection",
+    title: "8. Social Connection",
+    description: "Did you feel safe, connected, or supported by anyone in your environment today?",
     type: "choice",
     options: [
-      { value: "yes", label: "Yes, please" },
-      { value: "later", label: "Maybe later" },
-      { value: "no", label: "No, thank you" },
-      { value: "prefer-not", label: "Prefer not to say" },
+      { value: "connected", label: "Yes, felt supported and safe" },
+      { value: "somewhat", label: "Somewhat connected" },
+      { value: "isolated", label: "Felt isolated or unsupported" },
+      { value: "prefer-alone", label: "Preferred to be alone" },
     ],
+  },
+  {
+    id: "support_needs",
+    title: "9. Support Needs",
+    description: "Do you feel like you need extra guidance, professional legal/counseling aid, or immediate intervention right now?",
+    type: "choice",
+    multiple: true,
+    options: [
+      { value: "counseling", label: "Counseling or mental health guidance" },
+      { value: "legal-aid", label: "Legal or formal support aid" },
+      { value: "checkin-call", label: "A follow-up call from support team" },
+      { value: "none-now", label: "I am okay for now" },
+    ],
+  },
+  {
+    id: "outlook_tomorrow",
+    title: "10. Outlook for Tomorrow",
+    description: "How hopeful or manageable does tomorrow feel to you right now? Feel free to add any thoughts below.",
+    type: "text",
+    placeholder: "Share how tomorrow feels or anything else you'd like your support team to know...",
+    maxLength: 1000,
   },
 ];
 

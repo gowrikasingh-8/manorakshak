@@ -82,13 +82,8 @@ function CounsellorDashboard() {
                         </h1>
                     </div>
 
-                                        <div className="flex flex-wrap gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => navigate("/national")}
-                        >
-                            National Dashboard
-                        </Button>
+                    {/* COUNSELLOR-ONLY ACTION BUTTONS */}
+                    <div className="flex flex-wrap gap-2">
                         <Button
                             variant="outline"
                             onClick={() => navigate("/alerts")}
@@ -97,21 +92,9 @@ function CounsellorDashboard() {
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => navigate("/assign")}
-                        >
-                            Assign Cases
-                        </Button>
-                        <Button
-                            variant="outline"
                             onClick={() => navigate("/referrals")}
                         >
                             Track Referrals
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => navigate("/audit")}
-                        >
-                            View Activity Log
                         </Button>
                     </div>
 
@@ -290,7 +273,7 @@ function CounsellorDashboard() {
 
                                     </div>
 
-                                      {/* ACTION BUTTONS */}
+                                    {/* ACTION BUTTONS */}
                                     <div className="mt-6 flex flex-wrap justify-end gap-2">
 
                                         <Button

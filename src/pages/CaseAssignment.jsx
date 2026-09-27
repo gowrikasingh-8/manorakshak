@@ -6,27 +6,27 @@ import Button from "../components/Button";
 const initialCases = [
     {
         id: "CASE-101",
-        title: "Student Support Case",
-        priority: "High",
-        dueDate: "2026-09-08",
+        title: "Atrocity Trauma & Crisis Response",
+        priority: "Critical",
+        dueDate: "2026-09-28",
         status: "Unassigned",
-        reason: "Immediate counselling support required",
+        reason: "Immediate crisis counseling & psychological stabilization needed",
     },
     {
         id: "CASE-102",
-        title: "Academic Stress Case",
-        priority: "Medium",
-        dueDate: "2026-09-10",
+        title: "Gender-Based Violence Distress Care",
+        priority: "High",
+        dueDate: "2026-09-30",
         status: "Unassigned",
-        reason: "Student reporting academic pressure",
+        reason: "Trauma therapy support & emotional recovery planning",
     },
     {
         id: "CASE-103",
-        title: "Wellbeing Follow-up",
-        priority: "Low",
-        dueDate: "2026-09-14",
+        title: "Discrimination & Workplace Harassment Support",
+        priority: "Medium",
+        dueDate: "2026-10-04",
         status: "Unassigned",
-        reason: "Routine wellbeing follow-up",
+        reason: "Ongoing psychological counseling & coping strategy guidance",
     },
 ];
 
@@ -34,6 +34,7 @@ const counsellors = [
     {
         id: 1,
         name: "Dr. Ananya Sharma",
+        specialization: "Trauma & Acute Crisis Counseling",
         availability: "Available",
         workload: 4,
         capacity: 8,
@@ -41,6 +42,7 @@ const counsellors = [
     {
         id: 2,
         name: "Rahul Mehta",
+        specialization: "PTSD & Psychosocial Support",
         availability: "Available",
         workload: 6,
         capacity: 8,
@@ -48,6 +50,7 @@ const counsellors = [
     {
         id: 3,
         name: "Priya Kapoor",
+        specialization: "Community & Mental Health Rehabilitation",
         availability: "Busy",
         workload: 8,
         capacity: 8,
@@ -118,16 +121,15 @@ export default function CaseAssignment() {
                 <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div>
                         <p className="text-teal-400 font-medium mb-2">
-                            CASE MANAGEMENT
+                            MENTAL HEALTH CASE MANAGEMENT
                         </p>
 
                         <h1 className="text-3xl md:text-4xl font-bold">
-                            Case Assignment Workspace
+                            Counsellor Assignment Workspace
                         </h1>
 
                         <p className="text-slate-400 mt-2">
-                            Distribute cases based on counsellor availability, workload and
-                            case priority.
+                            Distribute reported atrocity distress cases based on mental health counsellor availability, trauma workload, and psychological urgency.
                         </p>
                     </div>
 
@@ -145,19 +147,19 @@ export default function CaseAssignment() {
                     <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
                         {[
                             "Unassigned Cases",
-                            "Select Case",
+                            "Select Incident",
                             "Select Counsellor",
-                            "Set Priority",
-                            "Assign",
+                            "Set Priority & Care Level",
+                            "Assign Case",
                             "Follow-up Scheduled",
                         ].map((step, index) => {
                             const active =
-                                index === 0 && !selectedCase ||
-                                index === 1 && selectedCase && !selectedCounsellor ||
-                                index === 2 && selectedCounsellor && !assigned ||
-                                index === 3 && selectedCounsellor && !assigned ||
-                                index === 4 && assigned && !followUp ||
-                                index === 5 && followUp;
+                                (index === 0 && !selectedCase) ||
+                                (index === 1 && selectedCase && !selectedCounsellor) ||
+                                (index === 2 && selectedCounsellor && !assigned) ||
+                                (index === 3 && selectedCounsellor && !assigned) ||
+                                (index === 4 && assigned && !followUp) ||
+                                (index === 5 && followUp);
 
                             return (
                                 <div
@@ -183,7 +185,7 @@ export default function CaseAssignment() {
                     <Card>
                         <div className="flex justify-between items-center mb-5">
                             <h2 className="text-xl font-semibold">
-                                Unassigned Cases
+                                Reported Incidents
                             </h2>
 
                             <span className="text-xs bg-slate-800 px-3 py-1 rounded-full">
@@ -205,7 +207,7 @@ export default function CaseAssignment() {
                                     >
                                         <div className="flex justify-between gap-3">
                                             <div>
-                                                <p className="font-semibold">
+                                                <p className="font-semibold text-teal-300">
                                                     {caseItem.id}
                                                 </p>
 
@@ -214,13 +216,17 @@ export default function CaseAssignment() {
                                                 </p>
                                             </div>
 
-                                            <span className="text-xs px-2 py-1 rounded bg-slate-800 h-fit">
+                                            <span className={`text-xs px-2 py-1 rounded h-fit font-semibold ${
+                                                caseItem.priority === "Critical" 
+                                                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" 
+                                                    : "bg-slate-800 text-slate-300"
+                                            }`}>
                                                 {caseItem.priority}
                                             </span>
                                         </div>
 
                                         <p className="text-xs text-slate-500 mt-3">
-                                            Due: {caseItem.dueDate}
+                                            Target Session Date: {caseItem.dueDate}
                                         </p>
 
                                         <div className="flex gap-2 mt-4">
@@ -245,7 +251,7 @@ export default function CaseAssignment() {
                             {cases.filter((item) => item.status === "Unassigned")
                                 .length === 0 && (
                                     <p className="text-slate-500 text-sm">
-                                        No unassigned cases remaining.
+                                        No unassigned mental health cases remaining.
                                     </p>
                                 )}
                         </div>
@@ -254,12 +260,12 @@ export default function CaseAssignment() {
                     {/* Case Details */}
                     <Card>
                         <h2 className="text-xl font-semibold mb-5">
-                            Case Details
+                            Incident Details
                         </h2>
 
                         {!selectedCase ? (
                             <div className="text-center py-12 text-slate-500">
-                                Select a case to begin assignment.
+                                Select an incident to begin mental health counsellor assignment.
                             </div>
                         ) : (
                             <div className="space-y-5">
@@ -272,13 +278,13 @@ export default function CaseAssignment() {
                                 </div>
 
                                 <div>
-                                    <p className="text-xs text-slate-500">CASE TYPE</p>
+                                    <p className="text-xs text-slate-500">DISTRESS CATEGORY</p>
                                     <p className="mt-1">{selectedCase.title}</p>
                                 </div>
 
                                 <div>
                                     <p className="text-xs text-slate-500">
-                                        ASSIGNMENT REASON
+                                        ASSIGNMENT REASON & PSYCHOLOGICAL NEED
                                     </p>
                                     <p className="text-sm text-slate-300 mt-1">
                                         {selectedCase.reason}
@@ -288,13 +294,13 @@ export default function CaseAssignment() {
                                 {/* Priority */}
                                 <div>
                                     <label className="text-sm text-slate-400">
-                                        Case Priority
+                                        Distress Priority Level
                                     </label>
 
                                     <select
                                         value={priority}
                                         onChange={(e) => setPriority(e.target.value)}
-                                        className="w-full mt-2 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white"
+                                        className="w-full mt-2 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-teal-400"
                                     >
                                         <option>Low</option>
                                         <option>Medium</option>
@@ -306,14 +312,14 @@ export default function CaseAssignment() {
                                 {/* Due Date */}
                                 <div>
                                     <label className="text-sm text-slate-400">
-                                        Due Date
+                                        Counseling Session Target Date
                                     </label>
 
                                     <input
                                         type="date"
                                         value={dueDate}
                                         onChange={(e) => setDueDate(e.target.value)}
-                                        className="w-full mt-2 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white"
+                                        className="w-full mt-2 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-teal-400"
                                     />
                                 </div>
 
@@ -321,10 +327,10 @@ export default function CaseAssignment() {
                         )}
                     </Card>
 
-                    {/* Counsellors */}
+                    {/* Mental Health Counsellors */}
                     <Card>
                         <h2 className="text-xl font-semibold mb-5">
-                            Counsellor Availability
+                            Counsellor Availability & Roster
                         </h2>
 
                         <div className="space-y-3">
@@ -341,10 +347,15 @@ export default function CaseAssignment() {
                                             : "hover:border-teal-500"
                                         }`}
                                 >
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold">
-                                            {counsellor.name}
-                                        </span>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <span className="font-semibold block">
+                                                {counsellor.name}
+                                            </span>
+                                            <span className="text-xs text-teal-400 block mt-0.5">
+                                                {counsellor.specialization}
+                                            </span>
+                                        </div>
 
                                         <span className="text-xs">
                                             {counsellor.availability}
@@ -352,7 +363,7 @@ export default function CaseAssignment() {
                                     </div>
 
                                     <div className="mt-3 text-sm text-slate-400">
-                                        Current workload:{" "}
+                                        Active trauma caseload:{" "}
                                         <span className="text-white">
                                             {counsellor.workload}/{counsellor.capacity}
                                         </span>
@@ -385,28 +396,28 @@ export default function CaseAssignment() {
 
                             <div className="text-sm text-slate-400 mt-3 space-y-1">
                                 <p>
-                                    Case:{" "}
+                                    Incident Case:{" "}
                                     <span className="text-white">
                                         {selectedCase?.id || "Not selected"}
                                     </span>
                                 </p>
 
                                 <p>
-                                    Counsellor:{" "}
+                                    Assigned Mental Health Counsellor:{" "}
                                     <span className="text-white">
                                         {selectedCounsellor?.name || "Not selected"}
                                     </span>
                                 </p>
 
                                 <p>
-                                    Priority:{" "}
+                                    Distress Priority:{" "}
                                     <span className="text-white">
                                         {selectedCase ? priority : "Not set"}
                                     </span>
                                 </p>
 
                                 <p>
-                                    Due Date:{" "}
+                                    Target Counseling Date:{" "}
                                     <span className="text-white">
                                         {dueDate || "Not set"}
                                     </span>
@@ -425,8 +436,8 @@ export default function CaseAssignment() {
                             {assigned && (
                                 <Button onClick={handleFollowUp}>
                                     {followUp
-                                        ? "Follow-up Scheduled"
-                                        : "Schedule Follow-up"}
+                                        ? "Follow-up Session Scheduled"
+                                        : "Schedule Counseling Follow-up"}
                                 </Button>
                             )}
                         </div>
@@ -435,11 +446,11 @@ export default function CaseAssignment() {
                     {followUp && (
                         <div className="mt-5 p-4 rounded-lg border border-teal-400/40 bg-teal-400/10">
                             <p className="font-semibold text-teal-300">
-                                ✓ Follow-up scheduled successfully
+                                ✓ Mental health follow-up session scheduled successfully
                             </p>
 
                             <p className="text-sm text-slate-400 mt-1">
-                                The assigned counsellor can now continue the case workflow.
+                                The assigned mental health counsellor can now initiate psychological support and trauma recovery care.
                             </p>
                         </div>
                     )}
@@ -448,22 +459,22 @@ export default function CaseAssignment() {
                 {/* Assignment History */}
                 <Card className="mt-6">
                     <h2 className="text-xl font-semibold mb-5">
-                        Assignment History
+                        Assignment History & Audit Log
                     </h2>
 
                     {history.length === 0 ? (
                         <p className="text-slate-500 text-sm">
-                            No assignments have been made in this session.
+                            No counseling assignments have been made in this session.
                         </p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="text-left text-slate-500 border-b border-slate-700">
-                                        <th className="py-3">Case</th>
-                                        <th className="py-3">Counsellor</th>
-                                        <th className="py-3">Priority</th>
-                                        <th className="py-3">Date</th>
+                                        <th className="py-3">Incident Case</th>
+                                        <th className="py-3">Mental Health Counsellor</th>
+                                        <th className="py-3">Distress Level</th>
+                                        <th className="py-3">Date Assigned</th>
                                     </tr>
                                 </thead>
 
@@ -473,7 +484,7 @@ export default function CaseAssignment() {
                                             key={index}
                                             className="border-b border-slate-800"
                                         >
-                                            <td className="py-3">{item.caseId}</td>
+                                            <td className="py-3 font-mono text-teal-400">{item.caseId}</td>
                                             <td className="py-3">{item.counsellor}</td>
                                             <td className="py-3">{item.priority}</td>
                                             <td className="py-3">{item.date}</td>
@@ -492,29 +503,28 @@ export default function CaseAssignment() {
                     </h2>
 
                     <p className="text-sm text-slate-400 mt-2">
-                        Assigned cases can be reassigned when counsellor availability,
-                        workload or case priority changes.
+                        Assigned cases can be reassigned when counsellor availability, trauma caseload, or psychological distress levels change.
                     </p>
 
                     <div className="mt-4 grid md:grid-cols-3 gap-3">
                         <div className="p-4 rounded-lg bg-slate-900 border border-slate-700">
-                            <p className="font-medium">Workload Based</p>
+                            <p className="font-medium">Caseload Relief</p>
                             <p className="text-xs text-slate-500 mt-1">
-                                Move cases from overloaded counsellors.
+                                Rebalance active cases from overburdened mental health professionals.
                             </p>
                         </div>
 
                         <div className="p-4 rounded-lg bg-slate-900 border border-slate-700">
-                            <p className="font-medium">Availability Based</p>
+                            <p className="font-medium">Specialized Care</p>
                             <p className="text-xs text-slate-500 mt-1">
-                                Reassign when a counsellor becomes unavailable.
+                                Reassign to specialists focused on acute PTSD, severe distress, or grief.
                             </p>
                         </div>
 
                         <div className="p-4 rounded-lg bg-slate-900 border border-slate-700">
-                            <p className="font-medium">Priority Based</p>
+                            <p className="font-medium">Crisis Escalation</p>
                             <p className="text-xs text-slate-500 mt-1">
-                                Redirect urgent cases to available staff.
+                                Redirect high-urgency distress cases to available crisis intervention therapists.
                             </p>
                         </div>
                     </div>
@@ -522,7 +532,7 @@ export default function CaseAssignment() {
 
                 {/* Mock Data Notice */}
                 <p className="text-center text-xs text-slate-600 mt-6">
-                    Demo workspace • Counsellor availability and workload are mock data.
+                    Demo workspace • Counsellor availability, trauma specialization, and incident distress metrics are mock data.
                 </p>
             </div>
         </div>

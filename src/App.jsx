@@ -8,14 +8,16 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-
 import { AnimatePresence } from "framer-motion";
+
 import PageTransition from "./components/PageTransition";
 import TopProgressBar from "./components/TopProgressBar";
 import QuickExit from "./components/QuickExit";
 import QuickExitPage from "./pages/QuickExitPage";
 import { LanguageProvider } from "./LanguageContext";
 import { ThemeProvider, useTheme } from "./ThemeContext";
+
+// Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import AuditTimelinePage from "./pages/AuditTimelinePage";
@@ -41,31 +43,44 @@ import CaseDetail from "./pages/CaseDetail";
 import AIInsightCenter from "./pages/AIInsightCenter";
 import { Sun, Moon, Bell } from "lucide-react";
 
+// 1. Victim / Individual Seeking Support Links
 const victimLinks = [
   { to: "/dashboard", label: "My Dashboard" },
   { to: "/consent", label: "Consent" },
   { to: "/checkin", label: "Check-in" },
-  { to: "/profile", label: "Profile & Privacy" },
   { to: "/chat", label: "Chat Support" },
   { to: "/support", label: "Support Hub" },
   { to: "/result", label: "My Result" },
   { to: "/trends", label: "My Trends" },
-  { to: "/library", label: "Library" },
-  { to: "/notifications", label: "Notifications" },
+  { to: "/library", label: "Resource Library" },
+  { to: "/profile", label: "Profile & Privacy" },
 ];
 
-const staffLinks = [
+// 2. Family & Friends Links
+const familyLinks = [
+  { to: "/support", label: "Support Hub for Caregivers" },
+  { to: "/library", label: "Family Guidance Library" },
+  { to: "/notifications", label: "Updates & Alerts" },
+  { to: "/profile", label: "Account & Preferences" },
+];
+
+// 3. Counsellor Links (Day-to-day Case Work)
+const counsellorLinks = [
   { to: "/counsellor", label: "Counsellor Dashboard" },
+  { to: "/alerts", label: "Alerts & Escalations" },
+  { to: "/escalate", label: "Escalation Workflow" },
   { to: "/case-detail", label: "Case Detail" },
   { to: "/insights", label: "AI Insight Center" },
-  { to: "/national", label: "National Dashboard" },
-  { to: "/alerts", label: "Alerts" },
-  { to: "/reports", label: "Reports" },
-  { to: "/assign", label: "Case Assignment" },
-  { to: "/escalate", label: "Escalation Workflow" },
-  { to: "/audit", label: "Audit Timeline" },
   { to: "/referrals", label: "Referral Tracking" },
-  { to: "/system", label: "System Status" },
+];
+
+// 4. Admin / DM Links (Oversight & Governance)
+const adminLinks = [
+  { to: "/national", label: "National Dashboard" },
+  { to: "/assign", label: "Case Assignment Workspace" },
+  { to: "/reports", label: "Reports & Analytics" },
+  { to: "/system", label: "System & Integration Status" },
+  { to: "/audit", label: "Audit & Activity Timeline" },
 ];
 
 function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout, menuOpen, setMenuOpen }) {
@@ -73,14 +88,16 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
-  // Quick exit route — must be reachable regardless of login state
   if (location.pathname === "/quick-exit") {
     return <QuickExitPage />;
   }
 
   const handleLogin = (selectedRole) => {
     onLogin(selectedRole);
-    navigate(selectedRole === "staff" ? "/counsellor" : "/dashboard");
+    if (selectedRole === "admin") navigate("/national");
+    else if (selectedRole === "counsellor") navigate("/counsellor");
+    else if (selectedRole === "family") navigate("/support");
+    else navigate("/dashboard");
   };
 
   if (!loggedIn) {
@@ -98,30 +115,43 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
     );
   }
 
-  // Force Consent flow for victims — every login until they agree
   if (role === "victim" && !hasConsented && location.pathname !== "/consent") {
     return <Navigate to="/consent" replace />;
   }
 
-  const links = role === "staff" ? staffLinks : victimLinks;
+  const activeLinks =
+    role === "admin"
+      ? adminLinks
+      : role === "counsellor"
+      ? counsellorLinks
+      : role === "family"
+      ? familyLinks
+      : victimLinks;
+
+  const defaultRedirect =
+    role === "admin"
+      ? "/national"
+      : role === "counsellor"
+      ? "/counsellor"
+      : role === "family"
+      ? "/support"
+      : "/dashboard";
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
       <TopProgressBar />
 
-      {/* TOP BAR */}
+      {/* TOP HEADER BAR */}
       <div className="bg-teal-600 border-b border-teal-700 px-4 py-3 flex items-center justify-between relative">
-        {/* Left — hamburger + profile circle */}
         <div className="flex items-center gap-2">
           <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="flex flex-col gap-1.5 p-2">
             <span className="w-6 h-0.5 bg-white block"></span>
             <span className="w-6 h-0.5 bg-white block"></span>
             <span className="w-6 h-0.5 bg-white block"></span>
           </button>
-          {role === "victim" && (
+          {(role === "victim" || role === "family") && (
             <button
               onClick={() => navigate("/profile")}
-              aria-label="Go to profile"
               className="w-8 h-8 rounded-full bg-teal-800 border-2 border-teal-300 flex items-center justify-center text-white text-xs font-semibold hover:border-white transition-colors"
             >
               👤
@@ -129,23 +159,12 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
           )}
         </div>
 
-        {/* Center — title, absolutely positioned so it's always truly centered */}
         <span className="absolute left-1/2 -translate-x-1/2 text-white font-semibold text-sm">
-          Manorakshak {role === "staff" ? "· Staff Portal" : "· Support Space"}
+          Manorakshak · {role === "admin" ? "Admin Governance" : role === "counsellor" ? "Counsellor Portal" : role === "family" ? "Family Portal" : "Support Space"}
         </span>
 
-        {/* Right — notifications (only for victims/users) + theme toggle + quick exit + logout grouped together */}
         <div className="flex items-center gap-2">
-          {role === "victim" && (
-            <button
-              onClick={() => navigate("/notifications")}
-              className="p-2 rounded-full hover:bg-teal-700 text-white"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4" />
-            </button>
-          )}
-          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white" aria-label="Toggle theme">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-teal-700 text-white">
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           {role === "victim" && <QuickExit onLogout={onLogout} />}
@@ -155,14 +174,25 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
         </div>
       </div>
 
-      {/* SIDE MENU */}
+      {/* SIDEBAR NAVIGATION */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex">
-          <div className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col gap-4 overflow-y-auto">
-            <button onClick={() => setMenuOpen(false)} className="self-end text-slate-400 text-sm mb-4">
+          <div className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col gap-3 overflow-y-auto">
+            <button onClick={() => setMenuOpen(false)} className="self-end text-slate-400 text-sm mb-2">
               ✕ Close
             </button>
-            {links.map((link) => (
+
+            <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block mb-1">
+              {role === "admin"
+                ? "🏛️ Admin Governance"
+                : role === "counsellor"
+                ? "🧑‍⚕️ Counsellor Workspace"
+                : role === "family"
+                ? "🫂 Caregiver Space"
+                : "🌱 Personal Workspace"}
+            </span>
+
+            {activeLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -181,31 +211,42 @@ function AppRoutes({ loggedIn, role, hasConsented, onConsent, onLogin, onLogout,
         </div>
       )}
 
-      {/* APP ROUTES */}
+      {/* PROTECTED ROUTE DEFINITIONS */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/dashboard" element={<PageTransition>{role === "victim" ? <Dashboard /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/consent" element={<PageTransition>{role === "victim" ? <ConsentPage onConsent={onConsent} /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/chat" element={<PageTransition>{role === "victim" ? <Chat /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/support" element={<PageTransition>{role === "victim" ? <Support /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/result" element={<PageTransition>{role === "victim" ? <DistressIndicator /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/trends" element={<PageTransition>{role === "victim" ? <TimelineTrends /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/counsellor" element={<PageTransition>{role === "staff" ? <CounsellorDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/national" element={<PageTransition>{role === "staff" ? <NationalDashboard /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/alerts" element={<PageTransition>{role === "staff" ? <Alerts /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/reports" element={<PageTransition>{role === "staff" ? <ReportsPage /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/assign" element={<PageTransition>{role === "staff" ? <CaseAssignment /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/escalate" element={<PageTransition>{role === "staff" ? <EscalationWorkflow /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/audit" element={<PageTransition>{role === "staff" ? <AuditTimelinePage /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/referrals" element={<PageTransition>{role === "staff" ? <ReferralTracking /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/library" element={<PageTransition>{role === "victim" ? <Library /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/system" element={<PageTransition>{role === "staff" ? <SystemStatus /> : <Navigate to="/dashboard" />}</PageTransition>} />
+          {/* Victim Routes */}
+          <Route path="/dashboard" element={<PageTransition>{role === "victim" ? <Dashboard /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/consent" element={<PageTransition>{role === "victim" ? <ConsentPage onConsent={onConsent} /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/chat" element={<PageTransition>{role === "victim" ? <Chat /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/checkin" element={<PageTransition>{role === "victim" ? <CheckIn /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/result" element={<PageTransition>{role === "victim" ? <DistressIndicator /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/trends" element={<PageTransition>{role === "victim" ? <TimelineTrends /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+
+          {/* Shared Victim & Family Routes */}
+          <Route path="/support" element={<PageTransition>{(role === "victim" || role === "family") ? <Support /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/library" element={<PageTransition>{(role === "victim" || role === "family") ? <Library /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/profile" element={<PageTransition>{(role === "victim" || role === "family") ? <ProfilePage onLogout={onLogout} /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+
+          {/* Counsellor Routes */}
+          <Route path="/counsellor" element={<PageTransition>{role === "counsellor" ? <CounsellorDashboard /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/alerts" element={<PageTransition>{role === "counsellor" ? <Alerts /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/escalate" element={<PageTransition>{role === "counsellor" ? <EscalationWorkflow /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/case-detail" element={<PageTransition>{role === "counsellor" ? <CaseDetail /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/insights" element={<PageTransition>{role === "counsellor" ? <AIInsightCenter /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/referrals" element={<PageTransition>{role === "counsellor" ? <ReferralTracking /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+
+          {/* Admin / Governance Routes */}
+          <Route path="/national" element={<PageTransition>{role === "admin" ? <NationalDashboard /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/assign" element={<PageTransition>{role === "admin" ? <CaseAssignment /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/reports" element={<PageTransition>{role === "admin" ? <ReportsPage /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/system" element={<PageTransition>{role === "admin" ? <SystemStatus /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+          <Route path="/audit" element={<PageTransition>{role === "admin" ? <AuditTimelinePage /> : <Navigate to={defaultRedirect} />}</PageTransition>} />
+
+          {/* Shared Notifications */}
           <Route path="/notifications" element={<PageTransition><NotificationsPage /></PageTransition>} />
-          <Route path="/checkin" element={<PageTransition>{role === "victim" ? <CheckIn /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/profile" element={<PageTransition>{role === "victim" ? <ProfilePage onLogout={onLogout} /> : <Navigate to="/counsellor" />}</PageTransition>} />
-          <Route path="/case-detail" element={<PageTransition>{role === "staff" ? <CaseDetail /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="/insights" element={<PageTransition>{role === "staff" ? <AIInsightCenter /> : <Navigate to="/dashboard" />}</PageTransition>} />
-          <Route path="*" element={<Navigate to={role === "staff" ? "/counsellor" : "/dashboard"} />} />
+
+          {/* Fallback Catch-all */}
+          <Route path="*" element={<Navigate to={defaultRedirect} />} />
         </Routes>
       </AnimatePresence>
     </div>
@@ -218,9 +259,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasConsented, setHasConsented] = useState(false);
 
-  const handleConsent = () => {
-    setHasConsented(true);
-  };
+  const handleConsent = () => setHasConsented(true);
 
   const handleLogin = (selectedRole) => {
     setRole(selectedRole);

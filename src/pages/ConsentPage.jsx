@@ -16,10 +16,26 @@ export default function ConsentPage({ onConsent }) {
   const [contactPref, setContactPref] = useState("app");
   const [supportPref, setSupportPref] = useState("counselling");
   const [accordionOpen, setAccordionOpen] = useState(false);
+
+  // Trusted Relative / Contact Option
+  const [shareWithRelative, setShareWithRelative] = useState(false);
+  const [relativeDetails, setRelativeDetails] = useState({
+    name: "",
+    relationship: "",
+    contactMethod: "phone", // 'phone' | 'email' | 'whatsapp'
+    contactInfo: "",
+  });
+
   const navigate = useNavigate();
+
   const handleContinue = () => {
     if (!agreed) return;
-    onConsent?.();
+    onConsent?.({
+      language,
+      contactPref,
+      supportPref,
+      trustedRelative: shareWithRelative ? relativeDetails : null,
+    });
     navigate("/dashboard");
   };
 
@@ -129,6 +145,87 @@ export default function ConsentPage({ onConsent }) {
             </div>
             <p className="text-xs text-slate-500 mt-1">Optional — helps us tailor initial suggestions.</p>
           </div>
+        </Card>
+
+        {/* TRUSTED RELATIVE SHARING OPTION */}
+        <Card className="mb-6">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={shareWithRelative}
+              onChange={(e) => setShareWithRelative(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-teal-500"
+            />
+            <div>
+              <p className="text-sm font-medium text-white">
+                Share updates with a trusted relative or contact
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Optional. Allow an appointed family member or friend to receive updates or be notified if support is needed.
+              </p>
+            </div>
+          </label>
+
+          {shareWithRelative && (
+            <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Full Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Maya Sharma"
+                  value={relativeDetails.name}
+                  onChange={(e) => setRelativeDetails({ ...relativeDetails, name: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm text-white placeholder-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Relationship to you</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Sister, Friend, Parent"
+                  value={relativeDetails.relationship}
+                  onChange={(e) => setRelativeDetails({ ...relativeDetails, relationship: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm text-white placeholder-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">How should we reach them?</label>
+                <div className="flex gap-2 mb-2">
+                  {[
+                    { id: "phone", label: "Phone / SMS" },
+                    { id: "whatsapp", label: "WhatsApp" },
+                    { id: "email", label: "Email" },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setRelativeDetails({ ...relativeDetails, contactMethod: m.id })}
+                      className={`px-2.5 py-1 rounded text-xs border ${
+                        relativeDetails.contactMethod === m.id
+                          ? "bg-teal-600 border-teal-500 text-white"
+                          : "bg-slate-800 border-slate-700 text-slate-300"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type={relativeDetails.contactMethod === "email" ? "email" : "tel"}
+                  placeholder={
+                    relativeDetails.contactMethod === "email"
+                      ? "relative@example.com"
+                      : "+91 98765 43210"
+                  }
+                  value={relativeDetails.contactInfo}
+                  onChange={(e) => setRelativeDetails({ ...relativeDetails, contactInfo: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm text-white placeholder-slate-500"
+                />
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* CONSENT CHECKBOX */}
