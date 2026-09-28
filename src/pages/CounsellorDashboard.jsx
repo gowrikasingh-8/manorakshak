@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/button";
-import Card from "../components/card";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
 function CounsellorDashboard() {
     const navigate = useNavigate();

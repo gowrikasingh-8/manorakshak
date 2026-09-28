@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Button from "../components/button";
-import Card from "../components/card";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
 const demoCredentials = {
   victim: { email: "user@demo.com", password: "demo1234" },
