@@ -8,6 +8,7 @@ import { useTheme } from "../ThemeContext";
 import { useLanguage } from "../LanguageContext";
 import { useState } from "react";
 
+
 const TRANSLATIONS = {
   English: {
     heroTitle: "You Are Not Alone. We Are Here to Support You.",

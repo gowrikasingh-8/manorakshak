@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import { useLanguage } from "../LanguageContext";
 
 const demoCredentials = {
   victim: { email: "user@demo.com", password: "demo1234" },
@@ -10,10 +11,11 @@ const demoCredentials = {
 };
 
 export default function Login({ onLogin }) {
+  const { t } = useLanguage();
   const [role, setRole] = useState("victim");
   const [email, setEmail] = useState(demoCredentials.victim.email);
   const [password, setPassword] = useState(demoCredentials.victim.password);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // stores the KEY, not the text
 
   const handleRoleChange = (newRole) => {
     setRole(newRole);
@@ -24,7 +26,7 @@ export default function Login({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError("Please enter both email and password.");
+      setError("login_error");
       return;
     }
     setError("");
@@ -35,26 +37,26 @@ export default function Login({ onLogin }) {
     <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
       <Card className="w-full max-w-md">
         <h1 className="text-2xl font-bold text-teal-400 mb-1">Manorakshak</h1>
-        <p className="text-slate-400 text-xs mb-1">Welcome back</p>
-        <p className="text-slate-400 text-sm mb-6">Sign in to continue to your workspace.</p>
+        <p className="text-slate-400 text-xs mb-1">{t("login_welcome")}</p>
+        <p className="text-slate-400 text-sm mb-6">{t("login_subtitle")}</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-sm text-slate-300 block mb-1">Select Access Portal</label>
+            <label className="text-sm text-slate-300 block mb-1">{t("login_selectPortal")}</label>
             <select
               value={role}
               onChange={(e) => handleRoleChange(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-400"
             >
-              <option value="victim">🌱 User / Individual Portal</option>
-              <option value="family">🫂 Family & Friends Portal</option>
-              <option value="counsellor">🧑‍⚕️ Counsellor Portal</option>
-              <option value="admin">🏛️ Admin / DM Governance Portal</option>
+              <option value="victim">{`🌱 ${t("login_roleVictim")}`}</option>
+              <option value="family">{`🫂 ${t("login_roleFamily")}`}</option>
+              <option value="counsellor">{`🧑‍⚕️ ${t("login_roleCounsellor")}`}</option>
+              <option value="admin">{`🏛️ ${t("login_roleAdmin")}`}</option>
             </select>
           </div>
 
           <div>
-            <label className="text-sm text-slate-300 block mb-1">Email</label>
+            <label className="text-sm text-slate-300 block mb-1">{t("login_email")}</label>
             <input
               type="email"
               value={email}
@@ -65,7 +67,7 @@ export default function Login({ onLogin }) {
           </div>
 
           <div>
-            <label className="text-sm text-slate-300 block mb-1">Password</label>
+            <label className="text-sm text-slate-300 block mb-1">{t("login_password")}</label>
             <input
               type="password"
               value={password}
@@ -75,15 +77,15 @@ export default function Login({ onLogin }) {
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{t(error)}</p>}
 
           <Button type="submit" className="w-full">
-            Login
+            {t("login_button")}
           </Button>
         </form>
 
         <p className="text-slate-500 text-xs mt-4 text-center">
-          Demo only — pre-filled credentials for quick access.
+          {t("login_demoNote")}
         </p>
       </Card>
     </div>

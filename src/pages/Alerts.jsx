@@ -2,14 +2,16 @@ import { useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../LanguageContext"; // adjust path if your file is elsewhere
 
+// Data stays in English on purpose: filters, counts and status updates compare
+// against these values. Text is translated only when it is displayed.
 const initialAlerts = [
     {
         id: "ALT-1042",
         priority: "Critical",
         type: "Risk Threshold",
-        timestamp: "Today, 10:30 AM",
-        reason: "Risk score crossed the critical threshold.",
+
         owner: "Unassigned",
         status: "New",
         timeline: [
@@ -23,8 +25,7 @@ const initialAlerts = [
         id: "ALT-1087",
         priority: "High",
         type: "Behaviour Change",
-        timestamp: "Today, 9:15 AM",
-        reason: "A significant change was detected in the latest assessment.",
+        
         owner: "Counsellor Team",
         status: "Assigned",
         timeline: [
@@ -38,8 +39,7 @@ const initialAlerts = [
         id: "ALT-1103",
         priority: "Medium",
         type: "Follow-up Due",
-        timestamp: "Yesterday, 4:40 PM",
-        reason: "Scheduled follow-up has reached its due time.",
+
         owner: "Counsellor Team",
         status: "Acknowledged",
         timeline: [
@@ -53,8 +53,7 @@ const initialAlerts = [
         id: "ALT-1121",
         priority: "High",
         type: "Risk Threshold",
-        timestamp: "Yesterday, 2:10 PM",
-        reason: "Multiple risk indicators crossed the warning threshold.",
+
         owner: "Unassigned",
         status: "New",
         timeline: [
@@ -68,9 +67,26 @@ const initialAlerts = [
 
 function Alerts() {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [alerts, setAlerts] = useState(initialAlerts);
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
+
+    // Helpers to build translation keys from the English data values
+    const key = (text) => text.replace(/ /g, ""); // "Risk Threshold" -> "RiskThreshold"
+    const idKey = (id) => id.replace("-", "_"); // "ALT-1042" -> "ALT_1042"
+
+    // Timeline step labels, by position
+    const stepLabels = [
+        t("alerts_step_created"),
+        t("alerts_status_Acknowledged"),
+        t("alerts_status_Assigned"),
+        t("alerts_status_Escalated"),
+    ];
+
+    const typeText = (alert) => t(`alerts_type_${key(alert.type)}`);
+    const reasonText = (alert) => t(`alerts_reason_${idKey(alert.id)}`);
+    const timestampText = (alert) => t(`alerts_ts_${idKey(alert.id)}`);
 
     const updateAlert = (id, action) => {
         setAlerts((currentAlerts) =>
@@ -83,11 +99,7 @@ function Alerts() {
                         status: "Acknowledged",
                         timeline: alert.timeline.map((step, index) =>
                             index === 1
-                                ? {
-                                    ...step,
-                                    done: true,
-                                    time: "Now",
-                                }
+                                ? { ...step, done: true, time: "Now" }
                                 : step
                         ),
                     };
@@ -100,17 +112,9 @@ function Alerts() {
                         status: "Assigned",
                         timeline: alert.timeline.map((step, index) =>
                             index === 1
-                                ? {
-                                    ...step,
-                                    done: true,
-                                    time: step.time || "Now",
-                                }
+                                ? { ...step, done: true, time: step.time || "Now" }
                                 : index === 2
-                                    ? {
-                                        ...step,
-                                        done: true,
-                                        time: "Now",
-                                    }
+                                    ? { ...step, done: true, time: "Now" }
                                     : step
                         ),
                     };
@@ -123,17 +127,9 @@ function Alerts() {
                         status: "Escalated",
                         timeline: alert.timeline.map((step, index) =>
                             index <= 2
-                                ? {
-                                    ...step,
-                                    done: true,
-                                    time: step.time || "Now",
-                                }
+                                ? { ...step, done: true, time: step.time || "Now" }
                                 : index === 3
-                                    ? {
-                                        ...step,
-                                        done: true,
-                                        time: "Now",
-                                    }
+                                    ? { ...step, done: true, time: "Now" }
                                     : step
                         ),
                     };
@@ -146,24 +142,36 @@ function Alerts() {
 
     const handleAssign = (alert) => {
         updateAlert(alert.id, "assign");
-        navigate("/assign", { state: { alertId: alert.id, alertType: alert.type, alertReason: alert.reason } });
+        navigate("/assign", {
+            state: {
+                alertId: alert.id,
+                alertType: alert.type,
+                alertReason: alert.reason,
+            },
+        });
     };
 
     const handleEscalate = (alert) => {
         updateAlert(alert.id, "escalate");
-        navigate("/escalate", { state: { alertId: alert.id, alertType: alert.type, alertReason: alert.reason } });
+        navigate("/escalate", {
+            state: {
+                alertId: alert.id,
+                alertType: alert.type,
+                alertReason: alert.reason,
+            },
+        });
     };
 
     const filteredAlerts = alerts.filter((alert) => {
-        const matchesFilter =
-            filter === "All" || alert.priority === filter;
+        const matchesFilter = filter === "All" || alert.priority === filter;
 
         const searchText = search.toLowerCase();
 
+        // Search works on the text the user actually sees (selected language)
         const matchesSearch =
             alert.id.toLowerCase().includes(searchText) ||
-            alert.type.toLowerCase().includes(searchText) ||
-            alert.reason.toLowerCase().includes(searchText);
+            typeText(alert).toLowerCase().includes(searchText) ||
+            reasonText(alert).toLowerCase().includes(searchText);
 
         return matchesFilter && matchesSearch;
     });
@@ -188,16 +196,15 @@ function Alerts() {
                 <div className="mx-auto max-w-7xl px-6 py-5">
 
                     <p className="text-sm text-teal-400">
-                        Manorakshak • Alert Management
+                        {t("alerts_breadcrumb")}
                     </p>
 
                     <h1 className="mt-1 text-2xl font-bold text-white">
-                        Alerts & Escalation Center
+                        {t("alerts_title")}
                     </h1>
 
                     <p className="mt-2 text-slate-400">
-                        Central queue for threshold-crossing alerts and
-                        escalation actions.
+                        {t("alerts_subtitle")}
                     </p>
 
                 </div>
@@ -211,7 +218,7 @@ function Alerts() {
 
                     <Card>
                         <p className="text-sm text-slate-400">
-                            Total Alerts
+                            {t("alerts_total")}
                         </p>
 
                         <p className="mt-2 text-3xl font-bold text-teal-400">
@@ -221,7 +228,7 @@ function Alerts() {
 
                     <Card>
                         <p className="text-sm text-slate-400">
-                            Critical / High
+                            {t("alerts_criticalHigh")}
                         </p>
 
                         <p className="mt-2 text-3xl font-bold text-orange-300">
@@ -237,7 +244,7 @@ function Alerts() {
 
                     <Card>
                         <p className="text-sm text-slate-400">
-                            Unassigned
+                            {t("alerts_owner_Unassigned")}
                         </p>
 
                         <p className="mt-2 text-3xl font-bold text-yellow-300">
@@ -255,16 +262,16 @@ function Alerts() {
                 <section className="mt-10">
 
                     <h2 className="text-xl font-bold text-white">
-                        Priority Queue
+                        {t("alerts_queueTitle")}
                     </h2>
 
                     <p className="mt-1 text-sm text-slate-400">
-                        Review alerts, assign ownership and manage escalation.
+                        {t("alerts_queueSubtitle")}
                     </p>
 
                     <input
                         type="text"
-                        placeholder="Search alerts..."
+                        placeholder={t("alerts_search")}
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         className="mt-5 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder-slate-500 outline-none focus:border-teal-400 md:w-96"
@@ -272,21 +279,15 @@ function Alerts() {
 
                     <div className="mt-4 flex flex-wrap gap-2">
 
-                        {["All", "Critical", "High", "Medium"].map(
-                            (option) => (
-                                <Button
-                                    key={option}
-                                    onClick={() => setFilter(option)}
-                                    variant={
-                                        filter === option
-                                            ? "default"
-                                            : "outline"
-                                    }
-                                >
-                                    {option}
-                                </Button>
-                            )
-                        )}
+                        {["All", "Critical", "High", "Medium"].map((option) => (
+                            <Button
+                                key={option}
+                                onClick={() => setFilter(option)}
+                                variant={filter === option ? "default" : "outline"}
+                            >
+                                {t(`alerts_filter_${option}`)}
+                            </Button>
+                        ))}
 
                     </div>
 
@@ -300,11 +301,11 @@ function Alerts() {
                         <Card>
                             <div className="py-8 text-center">
                                 <p className="font-semibold text-white">
-                                    No alerts found
+                                    {t("alerts_noAlerts")}
                                 </p>
 
                                 <p className="mt-1 text-sm text-slate-400">
-                                    Try changing your search or filter.
+                                    {t("alerts_noAlertsHint")}
                                 </p>
                             </div>
                         </Card>
@@ -327,11 +328,11 @@ function Alerts() {
                                                     alert.priority
                                                 )}`}
                                             >
-                                                {alert.priority}
+                                                {t(`alerts_filter_${alert.priority}`)}
                                             </span>
 
                                             <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-300">
-                                                {alert.type}
+                                                {typeText(alert)}
                                             </span>
 
                                         </div>
@@ -345,11 +346,11 @@ function Alerts() {
                                     <div className="text-left lg:text-right">
 
                                         <p className="text-sm text-slate-400">
-                                            Status
+                                            {t("alerts_lblStatus")}
                                         </p>
 
                                         <p className="font-semibold text-teal-300">
-                                            {alert.status}
+                                            {t(`alerts_status_${alert.status}`)}
                                         </p>
 
                                     </div>
@@ -361,31 +362,31 @@ function Alerts() {
 
                                     <div>
                                         <p className="text-sm text-slate-400">
-                                            Alert Type
+                                            {t("alerts_lblType")}
                                         </p>
 
                                         <p className="mt-1 font-medium text-slate-200">
-                                            {alert.type}
+                                            {typeText(alert)}
                                         </p>
                                     </div>
 
                                     <div>
                                         <p className="text-sm text-slate-400">
-                                            Timestamp
+                                            {t("alerts_lblTimestamp")}
                                         </p>
 
                                         <p className="mt-1 font-medium text-slate-200">
-                                            {alert.timestamp}
+                                            {timestampText(alert)}
                                         </p>
                                     </div>
 
                                     <div>
                                         <p className="text-sm text-slate-400">
-                                            Owner
+                                            {t("alerts_lblOwner")}
                                         </p>
 
                                         <p className="mt-1 font-medium text-slate-200">
-                                            {alert.owner}
+                                            {t(`alerts_owner_${key(alert.owner)}`)}
                                         </p>
                                     </div>
 
@@ -395,11 +396,11 @@ function Alerts() {
                                 <div className="mt-6 rounded-xl border border-slate-700 bg-slate-900 p-4">
 
                                     <p className="text-sm font-semibold text-teal-400">
-                                        Why was this alert triggered?
+                                        {t("alerts_why")}
                                     </p>
 
                                     <p className="mt-2 text-sm leading-6 text-slate-300">
-                                        {alert.reason}
+                                        {reasonText(alert)}
                                     </p>
 
                                 </div>
@@ -408,12 +409,12 @@ function Alerts() {
                                 <div className="mt-6">
 
                                     <p className="text-sm font-semibold text-white">
-                                        Status Timeline
+                                        {t("alerts_timeline")}
                                     </p>
 
                                     <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 
-                                        {alert.timeline.map((step) => (
+                                        {alert.timeline.map((step, index) => (
 
                                             <div
                                                 key={step.label}
@@ -426,7 +427,7 @@ function Alerts() {
                                                 <div className="flex items-center justify-between gap-2">
 
                                                     <span className="text-sm font-medium text-slate-200">
-                                                        {step.label}
+                                                        {stepLabels[index]}
                                                     </span>
 
                                                     <span
@@ -443,7 +444,9 @@ function Alerts() {
 
                                                 {step.time && (
                                                     <p className="mt-1 text-xs text-slate-500">
-                                                        {step.time}
+                                                        {step.time === "Now"
+                                                            ? t("alerts_now")
+                                                            : step.time}
                                                     </p>
                                                 )}
 
@@ -463,21 +466,21 @@ function Alerts() {
                                             updateAlert(alert.id, "acknowledge")
                                         }
                                     >
-                                        Acknowledge
+                                        {t("alerts_acknowledge")}
                                     </Button>
 
                                     <Button
                                         variant="outline"
                                         onClick={() => handleAssign(alert)}
                                     >
-                                        Assign
+                                        {t("alerts_assign")}
                                     </Button>
 
                                     <Button
                                         variant="outline"
                                         onClick={() => handleEscalate(alert)}
                                     >
-                                        Escalate
+                                        {t("alerts_escalate")}
                                     </Button>
 
                                 </div>
