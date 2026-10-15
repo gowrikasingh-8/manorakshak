@@ -93,7 +93,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm text-slate-400">{t("dash_notifications")}</h2>
             <Button onClick={() => navigate("/notifications")} className="text-xs px-3 py-1.5">
-              {("dash_viewAll")}
+              {t("dash_viewAll")}
             </Button>
           </div>
           <ul className="space-y-2">
