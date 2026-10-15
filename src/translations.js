@@ -1,12 +1,11 @@
-import { landing } from "./locales/landing";
-import { login } from "./locales/login";
-import { Allnsightcenter } from "./locales/Allnsightcenter";
-import { Alerts } from "./locales/Alerts";
-import { Consentpage } from "./locales/Consentpage";
-import {CheckIn} from "./locales/CheckIn";
+import landing from "./pages/Landing.jsx";
+import login from "./pages/Login.jsx";
+import Allnsightcenter from "./pages/AIInsightCenter.jsx";
+import Alerts from "./pages/Alerts.jsx";
+import ConsentPage from "./pages/ConsentPage.jsx";
+import CheckIn from "./pages/CheckIn.jsx";
 
-
-const parts = [landing, login, Allnsightcenter, Alerts, Consentpage, CheckIn];
+const parts = [landing, login, Allnsightcenter, Alerts, ConsentPage, CheckIn];
 
 export const LANGUAGES = [
   "English", "हिंदी", "தமிழ்", "বাংলা", "తెలుగు",
