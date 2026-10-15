@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScheduleModal from "../components/ScheduleModal";
+import { useLanguage } from "../LanguageContext";
 
 /**
  * CheckIn.jsx
@@ -149,6 +150,7 @@ export default function CheckIn({
   onSave,
   storageKey = STORAGE_KEY,
 }) {
+  const {t} = useLanguage();
   const [answers, setAnswers] = useState({});
   const [step, setStep] = useState(0);
   const [skipped, setSkipped] = useState({});
@@ -462,14 +464,13 @@ export default function CheckIn({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                Support check-in
+                {t("ci_supportCheckin")}
               </p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
-                How are you doing today?
+                {t("ci_heading")}
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-                A short, optional check-in to help your support team understand
-                what kind of support may be useful.
+                {t("ci_headingText")}
               </p>
             </div>
 
@@ -502,12 +503,10 @@ export default function CheckIn({
 
           <div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-              Share only what feels safe
+              {t("ci_privacyTitle")}
             </p>
             <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-              Every question can be skipped. This check-in supports human
-              decision-making and does not diagnose a medical or mental-health
-              condition.
+              {t("ci_privacyText")}
             </p>
           </div>
         </div>
@@ -559,7 +558,7 @@ export default function CheckIn({
         >
           <div className="mb-7">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-              Optional question
+              {t("ci_optionalQuestion")}
             </p>
 
             <h2
@@ -741,11 +740,10 @@ export default function CheckIn({
         {/* Footer */}
         <footer className="mt-6 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
           <p>
-            Your responses are intended to support human review. They should
-            not be presented as an AI diagnosis or medical assessment.
+          {t("ci_footer1")}
           </p>
           <p className="mt-1">
-            Autosave stores the current draft locally on this device.
+            {t("ci_footer2")}
           </p>
         </footer>
       </div>

@@ -5,8 +5,11 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import ScheduleModal from "../components/ScheduleModal";
+import { useLanguage } from "../LanguageContext";
+
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
@@ -29,31 +32,31 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-900 text-white p-6">
       <header className="flex flex-wrap justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-teal-400">Welcome back</h1>
-          <p className="text-slate-400 text-sm">Here's how things are looking today.</p>
+          <h1 className="text-2xl font-bold text-teal-400">{t("dash_welcome")}</h1>
+          <p className="text-slate-400 text-sm">{t("dash_subtitle")}</p>
         </div>
-        <Badge color="teal">Privacy: Protected</Badge>
+        <Badge color="teal">{t("dash_privacy")}</Badge>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">
-          <h2 className="text-lg font-semibold mb-2">Today's Check-in</h2>
+          <h2 className="text-lg font-semibold mb-2">{t("dash_checkinTitle")}</h2>
           <p className="text-slate-300 text-sm mb-4">
-            A quick 2-minute check-in helps us understand how you're doing.
+            {t("dash_checkinText")}
           </p>
-          <Button onClick={() => navigate("/checkin")}>Start Check-in</Button>
+          <Button onClick={() => navigate("/checkin")}>{t("dash_startCheckin")}</Button>
         </Card>
 
         <Card>
-          <h2 className="text-sm text-slate-400 mb-1">Current Support Signal</h2>
-          <div className="text-4xl font-bold text-teal-400 mb-1">Moderate</div>
+          <h2 className="text-sm text-slate-400 mb-1">{t("dash_signalTitle")}</h2>
+          <div className="text-4xl font-bold text-teal-400 mb-1">{t("dash_signalValue")}</div>
           <p className="text-slate-400 text-xs">
-            This is a support signal, not a diagnosis.
+           {t("dash_signalNote")}
           </p>
         </Card>
 
         <Card className="md:col-span-2">
-          <h2 className="text-lg font-semibold mb-4">Your Trend This Week</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("dash_trendTitle")}</h2>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
@@ -65,32 +68,32 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
           <Button className="w-full mt-4" onClick={() => navigate("/trends")}>
-            View Full Trends
+           {t("dash_viewTrends")}
           </Button>
         </Card>
 
         <Card>
-          <h2 className="text-sm text-slate-400 mb-2">Upcoming Follow-up</h2>
-          <p className="text-white font-medium">Counsellor Call</p>
-          <p className="text-slate-400 text-sm mb-3">Tomorrow, 4:00 PM</p>
+          <h2 className="text-sm text-slate-400 mb-2">{t("dash_followupTitle")}</h2>
+          <p className="text-white font-medium">{t("dash_followupName")}</p>
+          <p className="text-slate-400 text-sm mb-3">{t("dash_followupTime")}</p>
           <Button className="w-full text-xs" onClick={() => setScheduleOpen(true)}>
-            Schedule New Follow-up
+            {t("dash_scheduleNew")}
           </Button>
         </Card>
 
         <Card>
-          <h2 className="text-sm text-slate-400 mb-3">Support Shortcuts</h2>
+          <h2 className="text-sm text-slate-400 mb-3">{t("dash_shortcuts")}</h2>
           <div className="flex flex-col gap-2">
-            <Button className="w-full" onClick={() => navigate("/chat")}>Talk to Chatbot</Button>
-            <Button className="w-full" onClick={() => navigate("/support")}>View Support Options</Button>
+            <Button className="w-full" onClick={() => navigate("/chat")}>{t("dash_chatbot")}</Button>
+            <Button className="w-full" onClick={() => navigate("/support")}>{t("dash_supportOptions")}</Button>
           </div>
         </Card>
 
         <Card className="md:col-span-2">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm text-slate-400">Notifications</h2>
+            <h2 className="text-sm text-slate-400">{t("dash_notifications")}</h2>
             <Button onClick={() => navigate("/notifications")} className="text-xs px-3 py-1.5">
-              View All
+              {("dash_viewAll")}
             </Button>
           </div>
           <ul className="space-y-2">
