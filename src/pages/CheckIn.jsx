@@ -8,7 +8,7 @@ import { useLanguage } from "../LanguageContext";
  * Calm, accessible victim-support check-in UI.
  * Requires Tailwind CSS with darkMode: "class".
  */
-
+// 
 const DEFAULT_QUESTIONS = [
   {
     id: "overall_emotional_state",

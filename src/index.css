@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
   scroll-behavior: smooth;
 }
@@ -21,21 +23,32 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: #0f172a;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 8px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #2dd4bf;
 }
 
 @keyframes loadbar {
-  0% { width: 0%; }
-  60% { width: 80%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+
+  60% {
+    width: 80%;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 /* ===== LIGHT MODE OVERRIDES ===== */
