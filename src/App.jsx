@@ -45,6 +45,7 @@ import TrustedPersonDashboard from "./pages/TrustedPersonDashboard";
 import TrustedPersonCounsellorDetails from "./pages/TrustedPersonCounsellorDetails";
 import TrustedPersonNotifications from "./pages/TrustedPersonNotifications";
 import { Sun, Moon, Bell } from "lucide-react";
+import { setAuthToken } from "./utils/api";
 
 // 1. Victim / Individual Seeking Support Links
 const victimLinks = [
@@ -316,13 +317,14 @@ export default function App() {
 
   const handleConsent = () => setHasConsented(true);
 
-  const handleLogin = (selectedRole) => {
+  const handleLogin = (selectedRole, consented = false) => {
     setRole(selectedRole);
     setLoggedIn(true);
-    setHasConsented(false);
+    setHasConsented(selectedRole === "victim" ? Boolean(consented) : false);
   };
 
   const handleLogout = () => {
+    setAuthToken(null);
     setLoggedIn(false);
     setRole(null);
     setMenuOpen(false);
